@@ -12,7 +12,7 @@
     "jsonwebtoken": "^8.5.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
-    "simple-oauth2": "^2.5.2",
+    "simple-oauth2": "^3.3.0",
     "statman-stopwatch": "^2.11.1",
     "verror": "^1.10.0"
   },
