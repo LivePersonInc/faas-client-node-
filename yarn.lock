@@ -399,22 +399,17 @@
     "@types/istanbul-lib-coverage" "*"
     "@types/istanbul-lib-report" "*"
 
-"@types/jest-diff@*":
-  version "20.0.1"
-  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/@types/jest-diff/-/jest-diff-20.0.1.tgz?dl=https://registry.yarnpkg.com/@types/jest-diff/-/jest-diff-20.0.1.tgz#35cc15b9c4f30a18ef21852e255fdb02f6d59b89"
-  integrity sha1-NcwVucTzChjvIYUuJV/bAvbVm4k=
-
-"@types/jest@^24.0.18":
-  version "24.0.18"
-  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/@types/jest/-/jest-24.0.18.tgz?dl=https://registry.yarnpkg.com/@types/jest/-/jest-24.0.18.tgz#9c7858d450c59e2164a8a9df0905fc5091944498"
-  integrity sha1-nHhY1FDFniFkqKnfCQX8UJGURJg=
+"@types/jest@^24.9.1":
+  version "24.9.1"
+  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/@types/jest/-/jest-24.9.1.tgz?dl=https://registry.yarnpkg.com/@types/jest/-/jest-24.9.1.tgz#02baf9573c78f1b9974a5f36778b366aa77bd534"
+  integrity sha1-Arr5Vzx48bmXSl82d4s2aqd71TQ=
   dependencies:
-    "@types/jest-diff" "*"
+    jest-diff "^24.3.0"
 
-"@types/jsonwebtoken@^8.3.3":
-  version "8.3.3"
-  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/@types/jsonwebtoken/-/jsonwebtoken-8.3.3.tgz?dl=https://registry.yarnpkg.com/@types/jsonwebtoken/-/jsonwebtoken-8.3.3.tgz#eafeea8239c74b02263d204c0e1175d5cd0bb85f"
-  integrity sha1-6v7qgjnHSwImPSBMDhF11c0LuF8=
+"@types/jsonwebtoken@^8.3.7":
+  version "8.3.7"
+  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/@types/jsonwebtoken/-/jsonwebtoken-8.3.7.tgz?dl=https://registry.yarnpkg.com/@types/jsonwebtoken/-/jsonwebtoken-8.3.7.tgz#ab79ad55b9435834d24cca3112f42c08eedb1a54"
+  integrity sha1-q3mtVblDWDTSTMoxEvQsCO7bGlQ=
   dependencies:
     "@types/node" "*"
 
@@ -423,15 +418,15 @@
   resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/@types/node/-/node-12.7.4.tgz?dl=https://registry.yarnpkg.com/@types/node/-/node-12.7.4.tgz#64db61e0359eb5a8d99b55e05c729f130a678b04"
   integrity sha1-ZNth4DWetajZm1XgXHKfEwpniwQ=
 
-"@types/node@^10.0.3":
-  version "10.14.17"
-  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/@types/node/-/node-10.14.17.tgz?dl=https://registry.yarnpkg.com/@types/node/-/node-10.14.17.tgz#b96d4dd3e427382482848948041d3754d40fd5ce"
-  integrity sha1-uW1N0+QnOCSChIlIBB03VNQP1c4=
+"@types/node@^10.17.14":
+  version "10.17.14"
+  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/@types/node/-/node-10.17.14.tgz?dl=https://registry.yarnpkg.com/@types/node/-/node-10.17.14.tgz#b6c60ebf2fb5e4229fdd751ff9ddfae0f5f31541"
+  integrity sha1-tsYOvy+15CKf3XUf+d364PXzFUE=
 
-"@types/request-promise@^4.1.44":
-  version "4.1.44"
-  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/@types/request-promise/-/request-promise-4.1.44.tgz?dl=https://registry.yarnpkg.com/@types/request-promise/-/request-promise-4.1.44.tgz#05b59cd18445832fae16b68d5bb3d4621b549485"
-  integrity sha1-BbWc0YRFgy+uFraNW7PUYhtUlIU=
+"@types/request-promise@^4.1.45":
+  version "4.1.45"
+  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/@types/request-promise/-/request-promise-4.1.45.tgz?dl=https://registry.yarnpkg.com/@types/request-promise/-/request-promise-4.1.45.tgz#7fcdd39fd920674ab7bfb44197270f225fb4e585"
+  integrity sha1-f83Tn9kgZ0q3v7RBlycPIl+05YU=
   dependencies:
     "@types/bluebird" "*"
     "@types/request" "*"
@@ -446,10 +441,10 @@
     "@types/tough-cookie" "*"
     form-data "^2.5.0"
 
-"@types/simple-oauth2@^2.2.1":
-  version "2.2.1"
-  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/@types/simple-oauth2/-/simple-oauth2-2.2.1.tgz?dl=https://registry.yarnpkg.com/@types/simple-oauth2/-/simple-oauth2-2.2.1.tgz#db961cac33fd273c43b10f19b52c272dcb6530fc"
-  integrity sha1-25YcrDP9JzxDsQ8ZtSwnLctlMPw=
+"@types/simple-oauth2@^2.5.2":
+  version "2.5.2"
+  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/@types/simple-oauth2/-/simple-oauth2-2.5.2.tgz?dl=https://registry.yarnpkg.com/@types/simple-oauth2/-/simple-oauth2-2.5.2.tgz#7040e811e47b9560bb2f8ee6c833947177ae05de"
+  integrity sha1-cEDoEeR7lWC7L47myDOUcXeuBd4=
 
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
@@ -1141,10 +1136,10 @@ data-urls@^1.0.0:
     whatwg-mimetype "^2.2.0"
     whatwg-url "^7.0.0"
 
-date-fns@^1.3.0:
-  version "1.30.1"
-  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/date-fns/-/date-fns-1.30.1.tgz?dl=https://registry.yarnpkg.com/date-fns/-/date-fns-1.30.1.tgz#2e71bf0b119153dbb4cc4e88d9ea5acfb50dc05c"
-  integrity sha1-LnG/CxGRU9u0zE6I2epaz7UNwFw=
+date-fns@^2.2.1:
+  version "2.9.0"
+  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/date-fns/-/date-fns-2.9.0.tgz?dl=https://registry.yarnpkg.com/date-fns/-/date-fns-2.9.0.tgz#d0b175a5c37ed5f17b97e2272bbc1fa5aec677d2"
+  integrity sha1-0LF1pcN+1fF7l+InK7wfpa7Gd9I=
 
 debug@^2.2.0, debug@^2.3.3:
   version "2.6.9"
@@ -2272,7 +2267,7 @@ jest-config@^24.9.0:
     pretty-format "^24.9.0"
     realpath-native "^1.1.0"
 
-jest-diff@^24.8.0, jest-diff@^24.9.0:
+jest-diff@^24.3.0, jest-diff@^24.8.0, jest-diff@^24.9.0:
   version "24.9.0"
   resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/jest-diff/-/jest-diff-24.9.0.tgz?dl=https://registry.yarnpkg.com/jest-diff/-/jest-diff-24.9.0.tgz#931b7d0d5778a1baf7452cb816e325e3724055da"
   integrity sha1-kxt9DVd4obr3RSy4FuMl43JAVdo=
@@ -2836,6 +2831,11 @@ lodash.isstring@^4.0.1:
   version "4.0.1"
   resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/lodash.isstring/-/lodash.isstring-4.0.1.tgz?dl=https://registry.yarnpkg.com/lodash.isstring/-/lodash.isstring-4.0.1.tgz#d527dfb5456eca7cc9bb95d5daeaf88ba54a5451"
   integrity sha1-1SfftUVuynzJu5XV2ur4i6VKVFE=
+
+lodash.memoize@4.x:
+  version "4.1.2"
+  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/lodash.memoize/-/lodash.memoize-4.1.2.tgz?dl=https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
+  integrity sha1-vMbEmkKihA7Zl/Mj6tpezRguC/4=
 
 lodash.once@^4.0.0:
   version "4.1.1"
@@ -3912,13 +3912,13 @@ signal-exit@^3.0.0, signal-exit@^3.0.2:
   resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/signal-exit/-/signal-exit-3.0.2.tgz?dl=https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
   integrity sha1-tf3AjxKH6hF4Yo5BXiUTK3NkbG0=
 
-simple-oauth2@^2.4.0:
-  version "2.4.0"
-  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/simple-oauth2/-/simple-oauth2-2.4.0.tgz?dl=https://registry.yarnpkg.com/simple-oauth2/-/simple-oauth2-2.4.0.tgz#1bc5824d35d9ab28fc3f7a24866607239b50eba3"
-  integrity sha1-G8WCTTXZqyj8P3okhmYHI5tQ66M=
+simple-oauth2@^2.5.2:
+  version "2.5.2"
+  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/simple-oauth2/-/simple-oauth2-2.5.2.tgz?dl=https://registry.yarnpkg.com/simple-oauth2/-/simple-oauth2-2.5.2.tgz#337bcd4b44c76e976caa77a1c7b00612b2500aeb"
+  integrity sha1-M3vNS0THbpdsqnehx7AGErJQCus=
   dependencies:
     "@hapi/joi" "^15.1.1"
-    date-fns "^1.3.0"
+    date-fns "^2.2.1"
     debug "^4.1.1"
     wreck "^14.0.2"
 
@@ -4343,15 +4343,16 @@ trim-right@^1.0.1:
   resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/trim-right/-/trim-right-1.0.1.tgz?dl=https://registry.yarnpkg.com/trim-right/-/trim-right-1.0.1.tgz#cb2e1203067e0c8de1f614094b9fe45704ea6003"
   integrity sha1-yy4SAwZ+DI3h9hQJS5/kVwTqYAM=
 
-ts-jest@^24.0.2:
-  version "24.0.2"
-  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/ts-jest/-/ts-jest-24.0.2.tgz?dl=https://registry.yarnpkg.com/ts-jest/-/ts-jest-24.0.2.tgz#8dde6cece97c31c03e80e474c749753ffd27194d"
-  integrity sha1-jd5s7Ol8McA+gOR0x0l1P/0nGU0=
+ts-jest@^24.3.0:
+  version "24.3.0"
+  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/ts-jest/-/ts-jest-24.3.0.tgz?dl=https://registry.yarnpkg.com/ts-jest/-/ts-jest-24.3.0.tgz#b97814e3eab359ea840a1ac112deae68aa440869"
+  integrity sha1-uXgU4+qzWeqEChrBEt6uaKpECGk=
   dependencies:
     bs-logger "0.x"
     buffer-from "1.x"
     fast-json-stable-stringify "2.x"
     json5 "2.x"
+    lodash.memoize "4.x"
     make-error "1.x"
     mkdirp "0.x"
     resolve "1.x"
@@ -4430,10 +4431,10 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typescript@^3.7.2:
-  version "3.7.4"
-  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/typescript/-/typescript-3.7.4.tgz?dl=https://registry.yarnpkg.com/typescript/-/typescript-3.7.4.tgz#1743a5ec5fef6a1fa9f3e4708e33c81c73876c19"
-  integrity sha1-F0Ol7F/vah+p8+RwjjPIHHOHbBk=
+typescript@^3.7.5:
+  version "3.7.5"
+  resolved "http://tlvmvnrepository.tlv.lpnet.com/artifactory/api/npm/lp-npm-virtual/typescript/-/typescript-3.7.5.tgz?dl=https://registry.yarnpkg.com/typescript/-/typescript-3.7.5.tgz#0692e21f65fd4108b9330238aac11dd2e177a1ae"
+  integrity sha1-BpLiH2X9QQi5MwI4qsEd0uF3oa4=
 
 uglify-js@^3.1.4:
   version "3.6.0"
