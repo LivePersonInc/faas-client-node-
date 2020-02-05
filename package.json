@@ -1,0 +1,57 @@
+{
+  "name": "@liveperson/functions-client",
+  "version": "1.0.0",
+  "description": "JavaScript client for LivePerson Functions.",
+  "author": {
+    "name": "LivePersonInc",
+    "email": "faas-lp@liveperson.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "guid-typescript": "^1.0.9",
+    "jsonwebtoken": "^8.5.1",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4",
+    "simple-oauth2": "^2.4.0",
+    "statman-stopwatch": "^2.11.1",
+    "verror": "^1.10.0"
+  },
+  "scripts": {
+    "check": "gts check",
+    "clean": "gts clean",
+    "compile": "tsc -p .",
+    "fix": "gts fix",
+    "prepare": "npm run compile",
+    "pretest": "npm run compile",
+    "test": "jest --coverage ./test/unit",
+    "integration": "jest ./test/integration",
+    "example": "npm run compile && node example.js"
+  },
+  "keywords": [
+    "LivePerson",
+    "Functions"
+  ],
+  "main": "build/src/index.js",
+  "types": "build/src/index.d.ts",
+  "files": [
+    "build"
+  ],
+  "engines": {
+    "node": ">=10.13.0",
+    "npm": ">=6.4.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.18",
+    "@types/jsonwebtoken": "^8.3.3",
+    "@types/node": "^10.0.3",
+    "@types/request-promise": "^4.1.44",
+    "@types/simple-oauth2": "^2.2.1",
+    "@types/verror": "^1.10.3",
+    "expect-more-jest": "^2.4.2",
+    "gts": "^1.1.0",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.7.2"
+  },
+  "publishConfig":{"registry":"http://tlvmvnrepository/artifactory/api/npm/lp-npm-local/"}
+}
