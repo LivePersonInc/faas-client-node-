@@ -49,7 +49,7 @@ _Note:_ The library exposes typings for IDE assistance/auto-complete and compile
 
 ### Initializing the client
 
-The client will use the OAuth2.0 flow `client_credentials` for authorization. Please refer to these [docs](https://developers.liveperson.com/liveperson-functions-external-invocations-client-credentials.html) for further information on that. On each request the client will check if the `JWT` is about to expire. If this is the case, the client will try to refresh it. If the `JWT` is expired and the client failed to refresh it, an `Error` will be thrown. The time after which the refreshing logic will kick in can be specified via the property `jwtRefreshAfterMinutes`.
+The client will use the OAuth2.0 flow `client_credentials` for authorization. Please refer to these [docs](https://developers.liveperson.com/liveperson-functions-external-invocations-client-credentials.html) for further information on that. On each request the client will check if the `JWT` is about to expire. If this is the case, the client will try to refresh it. If the `JWT` is expired and the client failed to refresh it, an `Error` is thrown. The time after which the refreshing logic will kick in can be specified via the property `jwtRefreshAfterMinutes`.
 Alternatively you can provide your own authorization method that generates a suitable authorization header.
 
 ```js
