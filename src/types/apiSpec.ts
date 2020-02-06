@@ -30,18 +30,19 @@ export interface InvocationDomain {
 }
 
 export const EVENT = Object.freeze({
-  DENVER_POST_SURVEY_EMAIL_TRANSCRIPT: 'denver_post_survey_email_transcript',
-  CONTROLLERBOT_MESSAGING_NEW_CONVERSATION:
-    'controllerbot_messaging_new_conversation',
-  CONTROLLERBOT_MESSAGING_TTR: 'controllerbot_messaging_ttr',
-  CONTROLLERBOT_MESSAGING_PARTICIPANTS_CHANGE:
-    'controllerbot_messaging_participants_change',
-  CONTROLLERBOT_MESSAGING_CONVERSATION_IDLE:
-    'controllerbot_messaging_conversation_idle',
-  CONTROLLERBOT_MESSAGING_CONVERSATION_ROUTING:
-    'controllerbot_messaging_conversation_routing',
-  CONTROLLERBOT_MESSAGING_MID_CONVERSATION_MSG:
-    'controllerbot_messaging_mid_conversation_msg',
-  CONTROLLERBOT_MESSAGING_CONVERSATION_END:
-    'controllerbot_messaging_conversation_end',
+  ChatPostSurveyEmailTranscript: 'denver_post_survey_email_transcript',
+  ConversationalCommand: 'conversational_command',
+  MessagingNewConversation: 'controllerbot_messaging_new_conversation',
+  MessagingTTR: 'controllerbot_messaging_ttr',
+  MessagingParticipantChange: 'controllerbot_messaging_participants_change',
+  MessagingConversationIdle: 'controllerbot_messaging_conversation_idle',
+  MessagingConversationRouting: 'controllerbot_messaging_conversation_routing',
+  MessagingLineInOffHours: 'controllerbot_messaging_mid_conversation_msg',
+  MessagingConversationEnd: 'controllerbot_messaging_conversation_end',
+  MessagingSurveyStarted: 'surveybot_messaging_survey_started',
+  MessagingSurveyEnded: 'surveybot_messaging_survey_ended',
+  ThirdPartyBotsPostHook: 'bot_connectors_post_hook',
+  ThirdPartyBotsErrorHook: 'bot_connectors_error_hook',
+  ThirdPartyBotsCustomIntegration: 'bot_connectors_custom_integration',
+  ThirdPartyBotsPreHook: 'bot_connectors_pre_hook',
 } as const);
