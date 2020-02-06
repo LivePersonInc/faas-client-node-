@@ -1,4 +1,4 @@
-# FaaS-Client ![Alt text](/logo.png)
+# Functions-Client ![Alt text](/logo.png)
 
 > The [LivePerson Functions](https://developers.liveperson.com/liveperson-functions-overview.html) client for NodeJS.
 
@@ -7,7 +7,7 @@ It offers functionality to retrieve all lambdas and to invoke them via lambda UU
 **Table of Contents:**
 <!-- toc -->
 
-- [FaaS-Client](#faas-client)
+- [Functions-Client](#functions-client)
   - [Overview](#overview)
   - [Install](#install)
   - [Usage](#usage)
@@ -34,13 +34,13 @@ Capabilities:
 ## Install
 
 ```bash
-yarn add @liveperson/functions-client
+yarn add liveperson-functions-client
 ```
 
 or
 
 ```bash
-npm install @liveperson/functions-client
+npm install liveperson-functions-client
 ```
 
 ## Usage
@@ -53,7 +53,7 @@ The client will use the OAuth2.0 flow `client_credentials` for authorization. Pl
 Alternatively you can provide your own authorization method that generates a suitable authorization header.
 
 ```js
-import { Client } from '@rnd-mannheim/faas-client-js';
+import { Client } from 'liveperson-functions-client';
 // Either you provide client id and client secret as auth strategy as follows
 const client = new Client({
   accountId: 'myAccountId',
@@ -140,7 +140,7 @@ If you want to collect metrics you may implement the interface MetricCollector a
 The metrics are only held in memory and are not persisted. If you pass no implementation of MetricCollector the metrics will be ignored.
 
 ```js
-import { Client } from '@rnd-mannheim/faas-client-js';
+import { Client } from 'liveperson-functions-client';
 const client = new Client(
   {
     accountId: 'myAccountId',
@@ -175,7 +175,7 @@ const response = await client.invoke({
 
 ```js
 const response = await client.invoke({
-  eventId: 'eventId', 
+  eventId: 'eventId',
   externalSystem: 'demoSystem',
   body: {
     headers: [],
