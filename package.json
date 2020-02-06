@@ -1,5 +1,5 @@
 {
-  "name": "@liveperson/functions-client",
+  "name": "liveperson-functions-client",
   "version": "1.0.0",
   "description": "JavaScript client for LivePerson Functions.",
   "author": {
@@ -29,7 +29,8 @@
   },
   "keywords": [
     "LivePerson",
-    "Functions"
+    "Functions",
+    "Invocations"
   ],
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
