@@ -1,6 +1,6 @@
-# FaaS-Client ![Alt text](logo.png "Logo")
+# FaaS-Client ![Alt text](https://github.com/LivePersonInc/faas-client-node/blob/master/logo.png "Logo")
 
-> The [LivePerson Functions](https://developers.liveperson.com/liveperson-functions-overview.html) client for NodeJS. 
+> The [LivePerson Functions](https://developers.liveperson.com/liveperson-functions-overview.html) client for NodeJS.
 
 It offers functionality to retrieve all lambdas and to invoke them via lambda UUID or event IDs.
 
