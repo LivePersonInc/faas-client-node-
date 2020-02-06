@@ -1,4 +1,4 @@
-# FaaS-Client ![Alt text](/logo.png "Logo")
+# FaaS-Client ![Alt text](/logo.png)
 
 > The [LivePerson Functions](https://developers.liveperson.com/liveperson-functions-overview.html) client for NodeJS.
 
