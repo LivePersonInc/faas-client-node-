@@ -1,6 +1,6 @@
 {
   "name": "liveperson-functions-client",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "JavaScript client for LivePerson Functions.",
   "author": {
     "name": "LivePersonInc",
