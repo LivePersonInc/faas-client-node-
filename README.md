@@ -1,4 +1,4 @@
-# Functions-Client ![Alt text](/logo.png)
+# Functions-Client
 
 > The [LivePerson Functions](https://developers.liveperson.com/liveperson-functions-overview.html) client for NodeJS.
 
@@ -226,4 +226,4 @@ try {
 }
 ```
 
-More detailed information on errors that can occur can be found [here.](https://lpgithub.dev.lprnd.net/RnD-Mannheim/faas-error-codes/blob/master/index.ts)
+More detailed information on errors that can occur can be found [here.](https://developers.liveperson.com/liveperson-functions-external-invocations-error-codes.html)
