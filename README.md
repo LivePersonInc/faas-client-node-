@@ -136,7 +136,7 @@ const client = new Client({
 
 #### Collecting metrics
 
-If you want to collect metrics you can implement the interface MetricCollector and pass your implementation to the client when initializing it.
+If you want to collect metrics you may implement the interface MetricCollector and pass your implementation to the client when initializing it.
 The metrics are only held in memory and are not persisted. If you pass no implementation of MetricCollector the metrics will be ignored.
 
 ```js
