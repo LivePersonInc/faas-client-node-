@@ -29,13 +29,19 @@ export interface InvocationDomain {
   payload: any;
 }
 
-export const Event = Object.freeze({
+export const EVENT = Object.freeze({
   DENVER_POST_SURVEY_EMAIL_TRANSCRIPT: 'denver_post_survey_email_transcript',
-  CONTROLLERBOT_MESSAGING_NEW_CONVERSATION: 'controllerbot_messaging_new_conversation',
+  CONTROLLERBOT_MESSAGING_NEW_CONVERSATION:
+    'controllerbot_messaging_new_conversation',
   CONTROLLERBOT_MESSAGING_TTR: 'controllerbot_messaging_ttr',
-  CONTROLLERBOT_MESSAGING_PARTICIPANTS_CHANGE: 'controllerbot_messaging_participants_change',
-  CONTROLLERBOT_MESSAGING_CONVERSATION_IDLE: 'controllerbot_messaging_conversation_idle',
-  CONTROLLERBOT_MESSAGING_CONVERSATION_ROUTING: 'controllerbot_messaging_conversation_routing',
-  CONTROLLERBOT_MESSAGING_MID_CONVERSATION_MSG: 'controllerbot_messaging_mid_conversation_msg',
-  CONTROLLERBOT_MESSAGING_CONVERSATION_END: 'controllerbot_messaging_conversation_end',
+  CONTROLLERBOT_MESSAGING_PARTICIPANTS_CHANGE:
+    'controllerbot_messaging_participants_change',
+  CONTROLLERBOT_MESSAGING_CONVERSATION_IDLE:
+    'controllerbot_messaging_conversation_idle',
+  CONTROLLERBOT_MESSAGING_CONVERSATION_ROUTING:
+    'controllerbot_messaging_conversation_routing',
+  CONTROLLERBOT_MESSAGING_MID_CONVERSATION_MSG:
+    'controllerbot_messaging_mid_conversation_msg',
+  CONTROLLERBOT_MESSAGING_CONVERSATION_END:
+    'controllerbot_messaging_conversation_end',
 } as const);

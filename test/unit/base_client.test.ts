@@ -4,19 +4,19 @@ import {
   BaseConfig,
   Config,
 } from '../../src/client/clientConfig';
-import { Protocol, HttpMethod } from '../../src/types/getUrlOptions';
+import { PROTOCOL, HTTTP_METHOD } from '../../src/types/getUrlOptions';
 import { Tooling } from '../../src/types/tooling';
 import { IsImplementedCache } from '../../src/helper/isImplementedCache';
 import { Response } from '../../src/types/response';
 import { Invocation, LambdaRequest } from '../../src/types/invocationTypes';
-import { BaseClient, Event } from '../../src';
+import { BaseClient, EVENT } from '../../src';
 
 const defaultTestConfig: Required<DefaultConfig> = {
   gwCsdsServiceName: 'faasGW',
   uiCsdsServiceName: 'faasUI',
   apiVersion: '1',
   timeout: 10_000, // ms
-  protocol: Protocol.HTTPS,
+  protocol: PROTOCOL.HTTPS,
   getLambdasUri: 'api/account/%s/lambdas/',
   invokeUuidUri: 'api/account/%s/lambdas/%s/invoke',
   invokeEventUri: 'api/account/%s/events/%s/invoke',
@@ -101,7 +101,7 @@ const invoke = async (data: Invocation): Promise<Response> => {
         'User-Agent': expect.toBeNonEmptyString(),
         'X-Request-ID': expect.toBeNonEmptyString(),
       }),
-      method: HttpMethod.POST,
+      method: HTTTP_METHOD.POST,
     })
   );
   return resp;
@@ -136,7 +136,7 @@ const getLambdas = async (data: LambdaRequest): Promise<Response> => {
         'User-Agent': expect.toBeNonEmptyString(),
         'X-Request-ID': expect.toBeNonEmptyString(),
       }),
-      method: HttpMethod.GET,
+      method: HTTTP_METHOD.GET,
     })
   );
   return resp;
@@ -158,7 +158,7 @@ describe('Base Client', () => {
     test('invoke method with eventId', async () => {
       expect.hasAssertions();
       await invoke({
-        eventId: Event.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
+        eventId: EVENT.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
         body: { payload: null },
         externalSystem: 'test',
       });
@@ -177,7 +177,7 @@ describe('Base Client', () => {
       expect.hasAssertions();
       const client = new BaseClient(testConfig, testTooling);
       const hasBeenImplemented = await client.isImplemented({
-        eventId: Event.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
+        eventId: EVENT.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
         externalSystem: 'test',
       });
       expect(testTooling.metricCollector.onIsImplemented).toHaveBeenCalledTimes(
@@ -186,7 +186,7 @@ describe('Base Client', () => {
       expect(testTooling.metricCollector.onIsImplemented).toHaveBeenCalledWith(
         expect.objectContaining({
           accountId: testConfig.accountId,
-          event: Event.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
+          event: EVENT.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
           externalSystem: 'test',
           domain: 'test-domain.com',
           fromCache: false,
@@ -197,7 +197,7 @@ describe('Base Client', () => {
       expect(testTooling.getCsdsEntry).toHaveBeenCalledTimes(1);
       expect(testTooling.fetch).toHaveBeenCalledTimes(1);
       const hasBeenImplementedAgain = await client.isImplemented({
-        eventId: Event.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
+        eventId: EVENT.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
         externalSystem: 'test',
       });
       // should still only have been called once as second call result was cached
@@ -212,7 +212,7 @@ describe('Base Client', () => {
             'User-Agent': expect.toBeNonEmptyString(),
             'X-Request-ID': expect.toBeNonEmptyString(),
           }),
-          method: HttpMethod.GET,
+          method: HTTTP_METHOD.GET,
         })
       );
     });
@@ -223,14 +223,14 @@ describe('Base Client', () => {
       };
       const client = new BaseClient(testConfig, testToolingChanged);
       await client.isImplemented({
-        eventId: Event.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
+        eventId: EVENT.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
         externalSystem: 'test',
       });
 
       expect(testTooling.metricCollector.onIsImplemented).toHaveBeenCalledWith(
         expect.objectContaining({
           accountId: testConfig.accountId,
-          event: Event.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
+          event: EVENT.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
           externalSystem: 'test',
           domain: 'test-domain.com',
           fromCache: false,
@@ -239,7 +239,7 @@ describe('Base Client', () => {
 
       await new Promise(r => setTimeout(r, 2000));
       await client.isImplemented({
-        eventId: Event.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
+        eventId: EVENT.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
         externalSystem: 'test',
       });
       // will be called only once because cache has stored prior result
@@ -250,7 +250,7 @@ describe('Base Client', () => {
       expect(testTooling.metricCollector.onIsImplemented).toHaveBeenCalledWith(
         expect.objectContaining({
           accountId: testConfig.accountId,
-          event: Event.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
+          event: EVENT.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
           externalSystem: 'test',
           domain: 'unresolved',
           fromCache: true,
@@ -262,7 +262,7 @@ describe('Base Client', () => {
       expect.hasAssertions();
       await getLambdas({
         accountId: '123456',
-        eventId: Event.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
+        eventId: EVENT.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
         externalSystem: 'test',
         state: ['Productive'],
       });
@@ -298,7 +298,7 @@ describe('Base Client', () => {
       const client = new BaseClient(testConfig, failureTooling);
       await expect(
         client.invoke({
-          eventId: Event.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
+          eventId: EVENT.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
           body: { payload: null },
           externalSystem: 'test',
         })
@@ -311,7 +311,7 @@ describe('Base Client', () => {
           accountId: testConfig.accountId,
           fromCache: false,
           externalSystem: 'test',
-          event: Event.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
+          event: EVENT.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
           domain: 'unresolved',
         })
       );
@@ -475,7 +475,7 @@ describe('Base Client', () => {
       const client = new BaseClient(testConfig, failureTooling);
       await expect(
         client.isImplemented({
-          eventId: Event.DENVER_POST_SURVEY_EMAIL_TRANSCRIPT,
+          eventId: EVENT.DENVER_POST_SURVEY_EMAIL_TRANSCRIPT,
           externalSystem: 'test',
         })
       ).rejects.toBeInstanceOf(VError);
@@ -491,7 +491,7 @@ describe('Base Client', () => {
           accountId: testConfig.accountId,
           fromCache: false,
           externalSystem: 'test',
-          event: Event.DENVER_POST_SURVEY_EMAIL_TRANSCRIPT,
+          event: EVENT.DENVER_POST_SURVEY_EMAIL_TRANSCRIPT,
           domain: 'unresolved',
         })
       );
@@ -518,7 +518,7 @@ describe('Base Client', () => {
       const client = new BaseClient(customTestConfig, failureTooling);
       await expect(
         client.isImplemented({
-          eventId: Event.DENVER_POST_SURVEY_EMAIL_TRANSCRIPT,
+          eventId: EVENT.DENVER_POST_SURVEY_EMAIL_TRANSCRIPT,
           externalSystem: 'test',
         })
       ).rejects.toBeInstanceOf(VError);
@@ -534,7 +534,7 @@ describe('Base Client', () => {
           accountId: testConfig.accountId,
           fromCache: false,
           externalSystem: 'test',
-          event: Event.DENVER_POST_SURVEY_EMAIL_TRANSCRIPT,
+          event: EVENT.DENVER_POST_SURVEY_EMAIL_TRANSCRIPT,
           domain: 'test-domain.com',
         })
       );
@@ -554,7 +554,7 @@ describe('Base Client', () => {
       await expect(
         client.getLambdas({
           accountId: '12345678',
-          eventId: Event.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
+          eventId: EVENT.CONTROLLERBOT_MESSAGING_NEW_CONVERSATION,
           externalSystem: 'test',
         })
       ).rejects.toBeInstanceOf(VError);

@@ -1,5 +1,5 @@
 import { AppJwtCredentials } from './../types/appJwtCredentials';
-import { Protocol } from '../types/getUrlOptions';
+import { PROTOCOL } from '../types/getUrlOptions';
 export interface BaseConfig {
   /**
    * The accountId/siteId.
@@ -18,7 +18,7 @@ export interface DefaultConfig {
   readonly uiCsdsServiceName?: string;
   readonly apiVersion?: string;
   readonly timeout?: number;
-  readonly protocol?: typeof Protocol[keyof typeof Protocol];
+  readonly protocol?: typeof PROTOCOL[keyof typeof PROTOCOL];
   readonly getLambdasUri?: string;
   readonly invokeUuidUri?: string;
   readonly invokeEventUri?: string;
@@ -48,7 +48,7 @@ export const defaultConfig: Required<DefaultConfig> = {
   uiCsdsServiceName: 'faasUI',
   apiVersion: '1',
   timeout: 30000, // ms
-  protocol: Protocol.HTTPS,
+  protocol: PROTOCOL.HTTPS,
   getLambdasUri: 'api/account/%s/lambdas/',
   invokeUuidUri: 'api/account/%s/lambdas/%s/invoke',
   invokeEventUri: 'api/account/%s/events/%s/invoke',

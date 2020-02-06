@@ -1,5 +1,5 @@
 import { InvocationDomain } from './apiSpec';
-import { HttpMethod } from './getUrlOptions';
+import { HTTTP_METHOD } from './getUrlOptions';
 import { AuthorizationHeaderOptions } from './authorizationHeaderOptions';
 import { Headers } from './headers';
 
@@ -7,7 +7,7 @@ export interface FetchOptions {
   readonly url: string;
   readonly body?: any;
   readonly headers?: Headers;
-  readonly method?: typeof HttpMethod[keyof typeof HttpMethod];
+  readonly method?: typeof HTTTP_METHOD[keyof typeof HTTTP_METHOD];
 }
 
 export interface DoFetchOptions extends AuthorizationHeaderOptions {

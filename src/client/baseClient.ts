@@ -2,7 +2,7 @@ import { InvocationMetricData } from './../helper/metricCollector';
 import { format as createUrl } from 'url';
 import { format } from 'util';
 import VError = require('verror');
-import { HttpMethod, GetUrlOptions } from '../types/getUrlOptions';
+import { HTTTP_METHOD, GetUrlOptions } from '../types/getUrlOptions';
 import { Config, DebugConfig, GetAuthorizationHeader } from './clientConfig';
 import { Tooling } from '../types/tooling';
 import { Response } from '../types/response';
@@ -178,7 +178,7 @@ export class BaseClient {
   }
   private async performInvocation(data: Invocation, domain: string) {
     const invokeData = {
-      method: HttpMethod.POST,
+      method: HTTTP_METHOD.POST,
       ...this.config,
       ...data,
       requestId: this.tooling.generateId(),
@@ -230,7 +230,7 @@ export class BaseClient {
     domain: string
   ): Promise<Response> {
     const requestData = {
-      method: HttpMethod.GET,
+      method: HTTTP_METHOD.GET,
       ...this.config,
       ...data,
       requestId: this.tooling.generateId(),
@@ -270,7 +270,7 @@ export class BaseClient {
     domain: string
   ): Promise<boolean> {
     const isImplementedData = {
-      method: HttpMethod.GET,
+      method: HTTTP_METHOD.GET,
       ...this.config,
       ...data,
       requestId: this.tooling.generateId(),
