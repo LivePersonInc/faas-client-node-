@@ -299,7 +299,7 @@ export class BaseClient {
       })) || {
         body: {},
       };
-      if (!implemented) {
+      if (implemented === undefined) {
         throw new VError(
           {
             name: 'FaasIsImplementedParseError',

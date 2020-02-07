@@ -216,6 +216,45 @@ describe('Base Client', () => {
         })
       );
     });
+    test('isImplemented method with unimplemented event', async () => {
+      expect.hasAssertions();
+      const failureTooling: Required<Tooling> = {
+        ...testTooling,
+        fetch: jest.fn(async () => ({
+          body: {
+            implemented: false,
+          },
+          headers: {},
+          url: 'https://test-domain.com/',
+          ok: true,
+          status: 200,
+          statusText: 'Ok',
+        })),
+      };
+      const client = new BaseClient(testConfig, failureTooling);
+      const hasBeenImplemented = await client.isImplemented({
+        eventId: EVENT.MessagingLineInOffHours,
+        externalSystem: 'test',
+      });
+      expect(
+        failureTooling.metricCollector.onIsImplemented
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        failureTooling.metricCollector.onIsImplemented
+      ).toHaveBeenCalledWith(
+        expect.objectContaining({
+          accountId: testConfig.accountId,
+          event: EVENT.MessagingLineInOffHours,
+          externalSystem: 'test',
+          domain: 'test-domain.com',
+          fromCache: false,
+        })
+      );
+      expect(hasBeenImplemented).toBeFalse();
+      expect(failureTooling.generateId).toHaveBeenCalledTimes(1);
+      expect(failureTooling.getCsdsEntry).toHaveBeenCalledTimes(1);
+      expect(failureTooling.fetch).toHaveBeenCalledTimes(1);
+    });
     test('isImplemented with Cache Expired', async () => {
       const testToolingChanged = {
         ...testTooling,
