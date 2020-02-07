@@ -197,6 +197,8 @@ const response = await client.isImplemented({
 
 #### Getting a list of existing lambdas
 
+**You have to use your own authentication method when fetching lambdas as it still relies on OAuth 1.0.**
+
 ```js
 const response = await client.getLambdas({
   eventId: 'eventId', // filter lambdas for events
