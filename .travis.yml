@@ -9,6 +9,6 @@ node_js:
 - 10
 - lts/*
 notifications:
-  if: type = pull_request
   slack:
+    if: type = pull_request
     secure: l9+tdoA/7XYCFKsdwVUk9yiMsyZ/Qcf6Gr7EZYvcsTA2o0ubEjv1dEzKPSiFIK/FxKmsTEQ4+s/mzeKoixK1kI5JBKx9L9lzWmjRCqWCM6BJF4qwP9x2CLUVffk+SGW4vdkxdCtsAaPMQ+Bejp3IIB+kzman9muRWXAiKcn/IUU8IjVqyXDNtXDJ+tNK1tXxbFc/yK8D4MUus0PKuDEU5OVOVA0CecfvW8e8Nh0zC8/lAPm6xX5GbZXT+2ckF+Ld76T9US2WT7Ern4RIdAhNywQQTP3/94W0exlAXGESlO7xftzMHVsxovZbAIn+ISpFziHr6Cq5PN4BJBlRPPo1xnT50KiuihAZG/GN9xEbjQfzJHwnuSy5zz1cAn0qSuN5q0qDn2QxRaYYujuLkHcLUlcDLEQQ/Kz0u82jQFLqmPYs98alW6HntNo5TZ1Cm+7yYB55jl+yfiuqMmVgS4izuRAJFu/HV1C2XnuDYHcKPRyGovUqw5pCKPSjYuNuJI1ahB4oJx/Qeyw1zU9pWDvC9oUCfYScQlgumeERCsIglzeXOD/qir5yIFv23zMb03i3uq9vYDhzdup57Jo2i0hWYPq9ziLfLhCX8FVI9jyRxlCXmZgxCi5igpBtUw33u6Ek6NmNOLH/WF5dlSRdcgMaexTPaWMtRe2xnciqyYtkX1I=
