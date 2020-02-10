@@ -8,3 +8,8 @@ script:
 node_js:
   - 10
   - lts/*
+notifications:
+  webhooks: 
+    if: type = pull_request
+    urls:
+    - https://hooks.slack.com/services/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
