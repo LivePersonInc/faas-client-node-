@@ -2,7 +2,7 @@
 
 > The [LivePerson Functions](https://developers.liveperson.com/liveperson-functions-overview.html) client for NodeJS.
 
-It offers functionality to retrieve all lambdas and to invoke them via lambda UUID or event IDs.
+It offers functionality to retrieve all lambdas and invoke them via lambda UUID or event IDs.
 
 **Table of Contents:**
 <!-- toc -->
