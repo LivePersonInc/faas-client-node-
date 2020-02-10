@@ -4,7 +4,10 @@ install:
 - npm ci
 script:
 - npm test
+
+after_success:
 - codecov
+
 node_js:
 - 10
 - lts/*
