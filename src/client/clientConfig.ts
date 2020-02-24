@@ -41,7 +41,10 @@ export interface DebugConfig {
 
 export type Config = BaseConfig & DefaultConfig;
 
-export type GetAuthorizationHeader = (...params: any) => Promise<string>;
+export type GetAuthorizationHeader = (input: {
+  url: string;
+  method: string;
+}) => Promise<string>;
 
 export const defaultConfig: Required<DefaultConfig> = {
   gwCsdsServiceName: 'faasGW',
