@@ -1,6 +1,10 @@
 import { AppJwtCredentials } from './../../src/types/appJwtCredentials';
 import { Client } from '../../src/client/client';
 import { stringLiteral } from '@babel/types';
+import { GetAuthorizationHeader } from '../../src/client/clientConfig';
+import { promisify } from 'util';
+import { createHmac } from 'crypto';
+import OAuth from 'oauth-1.0a';
 
 const successLambdaUUID =
   process.env['SUCCESS_LAMBDA_UUID'] || 'does-not-exist';
@@ -12,10 +16,59 @@ const appJwtCredentials: AppJwtCredentials = {
   clientSecret,
 };
 describe('Invoke by UUID', () => {
-  it('should invoke and get result', async () => {
+  it('should invoke and get result via AppJwt', async () => {
     const client = new Client({
       accountId,
       authStrategy: appJwtCredentials,
+      failOnErrorStatusCode: true,
+    });
+    const payload = {
+      foo: 'bar',
+    };
+
+    const response = await client.invoke({
+      lambdaUuid: successLambdaUUID,
+      externalSystem: 'integration-tests',
+      body: {
+        headers: [],
+        payload,
+      },
+    });
+
+    expect(response.ok).toEqual(true);
+  });
+
+  it('should invoke and get result via custom Oauth1 implementation', async () => {
+    // custom auth implementation start
+    const getAuthorizationHeader: GetAuthorizationHeader = async (
+      url = 'url',
+      apiKey = 'apiKey',
+      apiSecret = 'apiSecret',
+      oauthSignMethod = 'sigMeth',
+      method = 'Meth'
+    ) => {
+      const oAuth = new OAuth({
+        consumer: {
+          key: apiKey,
+          secret: apiSecret,
+        },
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        signature_method: oauthSignMethod,
+        realm: '',
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        hash_function: (baseString: string, key: string): string => {
+          return createHmac(oauthSignMethod.split('-')[1], key)
+            .update(baseString)
+            .digest('base64');
+        },
+      });
+      return oAuth.toHeader(oAuth.authorize({ url, method })).Authorization;
+    };
+    // custom auth implementation end
+
+    const client = new Client({
+      accountId,
+      authStrategy: getAuthorizationHeader,
       failOnErrorStatusCode: true,
     });
     const payload = {
