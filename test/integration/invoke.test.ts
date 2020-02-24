@@ -40,13 +40,14 @@ describe('Invoke by UUID', () => {
 
   it('should invoke and get result via custom Oauth1 implementation', async () => {
     // custom auth implementation start
-    const getAuthorizationHeader: GetAuthorizationHeader = async (
-      url = 'url',
-      apiKey = 'apiKey',
-      apiSecret = 'apiSecret',
-      oauthSignMethod = 'sigMeth',
-      method = 'Meth'
-    ) => {
+    const getAuthorizationHeader: GetAuthorizationHeader = async ({
+      url,
+      method,
+    }) => {
+      const apiKey = 'apiKey';
+      const apiSecret = 'apiSecret';
+      const oauthSignMethod = 'sigMeth';
+
       const oAuth = new OAuth({
         consumer: {
           key: apiKey,
