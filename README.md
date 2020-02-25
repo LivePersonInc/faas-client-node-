@@ -57,6 +57,7 @@ export type GetAuthorizationHeader = (input: {
   method: string;
 }) => Promise<string>;
 ```
+
 Example:
 ```ts
 // Default: Provide client id and client secret as auth strategy as follows
