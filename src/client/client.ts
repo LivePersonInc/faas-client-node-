@@ -1,6 +1,6 @@
 import { AppJwtCredentials } from './../types/appJwtCredentials';
 import { IsImplementedCache } from './../helper/isImplementedCache';
-import * as request from 'request-promise';
+import request from 'request-promise';
 import { Guid } from 'guid-typescript';
 import { BaseClient } from './baseClient';
 import { Config, defaultConfig } from './clientConfig';

@@ -41,7 +41,18 @@ export interface DebugConfig {
 
 export type Config = BaseConfig & DefaultConfig;
 
-export type GetAuthorizationHeader = () => Promise<string>;
+/**
+ * Type that defines how custom 'getAuthorizationHeader' methods have to be implemented.
+ * If provided during client initialization, a custom 'getAuthorizationHeader' method gets
+ * called whenever the faas-client needs to authenticate to send a request. Its return value
+ * is used in the 'Authorization'-header of the request.
+ * @param input A object containing the 'url' and the 'http-method' of the request
+ * @return A promise resolving to a string which contains the value of the 'Authorization'-header
+ */
+export type GetAuthorizationHeader = (input: {
+  url: string;
+  method: string;
+}) => Promise<string>;
 
 export const defaultConfig: Required<DefaultConfig> = {
   gwCsdsServiceName: 'faasGW',

@@ -1,4 +1,4 @@
-import * as request from 'request-promise';
+import request from 'request-promise';
 import { CsdsClient } from '../../src/helper/csdsClient';
 import { promisify } from 'util';
 const setTimeoutPromise = promisify(setTimeout);
