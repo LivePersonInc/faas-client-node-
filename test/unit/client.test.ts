@@ -1,5 +1,5 @@
 import * as jwt from 'jsonwebtoken';
-import * as request from 'request-promise';
+import request from 'request-promise';
 import { BaseClient } from '../../src/client/baseClient';
 import { Client } from '../../src/client/client';
 import { CsdsClient } from '../../src/helper/csdsClient';
