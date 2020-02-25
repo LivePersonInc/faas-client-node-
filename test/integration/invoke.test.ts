@@ -11,6 +11,10 @@ const successLambdaUUID =
 const accountId = process.env['ACCOUNT_ID'] || 'does-not-exist';
 const clientId = process.env['CLIENT_ID'] || 'does-not-exist';
 const clientSecret = process.env['CLIENT_SECRET'] || 'does-not-exist';
+const oauthApiKey = process.env['OAUTH_API_KEY'] || 'does-not-exist';
+const oauthApiSecret = process.env['OAUTH_API_SECRET'] || 'does-not-exist';
+const oauthSignatureMethod =
+  process.env['OAUTH_SIGNATURE_METHOD'] || 'does-not-exist';
 const appJwtCredentials: AppJwtCredentials = {
   clientId,
   clientSecret,
@@ -44,21 +48,17 @@ describe('Invoke by UUID', () => {
       url,
       method,
     }) => {
-      const apiKey = 'apiKey';
-      const apiSecret = 'apiSecret';
-      const oauthSignMethod = 'sigMeth';
-
       const oAuth = new OAuth({
         consumer: {
-          key: apiKey,
-          secret: apiSecret,
+          key: oauthApiKey,
+          secret: oauthApiSecret,
         },
         // eslint-disable-next-line @typescript-eslint/camelcase
-        signature_method: oauthSignMethod,
+        signature_method: oauthSignatureMethod,
         realm: '',
         // eslint-disable-next-line @typescript-eslint/camelcase
         hash_function: (baseString: string, key: string): string => {
-          return createHmac(oauthSignMethod.split('-')[1], key)
+          return createHmac(oauthSignatureMethod.split('-')[1], key)
             .update(baseString)
             .digest('base64');
         },
