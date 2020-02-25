@@ -16,5 +16,5 @@ export type GetCsdsEntry = (
   account: string,
   csdsType: string
 ) => Promise<string>;
-export type Fetch = (options: FetchOptions) => Promise<Response>;
+export type Fetch = (options: FetchOptions, attempt?: number) => Promise<Response>;
 export type GenerateId = () => string;

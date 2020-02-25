@@ -4,6 +4,9 @@ import { BaseClient } from '../../src/client/baseClient';
 import { Client } from '../../src/client/client';
 import { CsdsClient } from '../../src/helper/csdsClient';
 import { BaseConfig, Config } from '../../src/client/clientConfig';
+import { RequestError } from 'request-promise/errors';
+import { Options } from 'request';
+import { IncomingMessage } from 'http';
 
 jest.mock('../../src/helper/csdsClient', () => {
   return {
@@ -108,7 +111,7 @@ describe('Client', () => {
   });
 
   describe('Unhappy flows', () => {
-    test('should throw if Funcitnos returns a none-okay status code', () => {
+    test('should throw if Functions returns a none-okay status code', () => {
       requestMock.mockRejectedValueOnce({
         response: {
           headers: [],
@@ -131,6 +134,30 @@ describe('Client', () => {
       ).rejects.toMatchObject({
         name: 'FaaSInvokeError',
         message: expect.stringContaining('502 - Whoops'),
+      });
+    });
+
+    test('should throw if network errors are raised continuously', () => {
+      requestMock.mockRejectedValue(
+        new RequestError(
+          { code: 'ECONNRESET' },
+          {} as Options,
+          {} as IncomingMessage
+        )
+      );
+      const config: Config = { ...testConfig, failOnErrorStatusCode: true };
+      const client = new Client(config);
+
+      expect(
+        client.invoke({
+          lambdaUuid: '4711',
+          externalSystem: 'test-system',
+          body: {
+            payload: {},
+          },
+        })
+      ).rejects.toMatchObject({
+        name: 'FaaSInvokeError',
       });
     });
   });
