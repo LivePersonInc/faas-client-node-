@@ -30,7 +30,7 @@ const getTooling = (
 
   const defaultFetch: Fetch = async (
     { url, body, headers, method },
-    attempt = 0
+    attempt = 1
   ) => {
     try {
       const resp = await request(url, {
@@ -56,8 +56,8 @@ const getTooling = (
         if (!isRetriableNetworkError(error) || attempt === 3) {
           throw error;
         }
-        
-        await sleep();
+
+        await sleep(attempt * 350); // 350 is the default value
         return defaultFetch({ url, body, headers, method }, attempt + 1);
       }
       const { response: resp } = error;
