@@ -137,7 +137,8 @@ describe('Client', () => {
       });
     });
 
-    test('should throw if network errors are raised continuously', () => {
+    test('should throw if network errors are raised continuously', async () => {
+      requestMock.mockReset(); //  To ensure only current calls are included
       requestMock.mockRejectedValue(
         new RequestError(
           { code: 'ECONNRESET' },
@@ -148,17 +149,19 @@ describe('Client', () => {
       const config: Config = { ...testConfig, failOnErrorStatusCode: true };
       const client = new Client(config);
 
-      expect(
-        client.invoke({
-          lambdaUuid: '4711',
+      try {
+        await client.invoke({
+          lambdaUuid: '4714',
           externalSystem: 'test-system',
           body: {
             payload: {},
           },
-        })
-      ).rejects.toMatchObject({
-        name: 'FaaSInvokeError',
-      });
+        });
+        fail('should thow');
+      } catch (error) {
+        expect(error.name).toEqual('FaaSInvokeError');
+        expect(requestMock).toHaveBeenCalledTimes(3);
+      }
     });
   });
 });
