@@ -4,6 +4,9 @@ import { BaseClient } from '../../src/client/baseClient';
 import { Client } from '../../src/client/client';
 import { CsdsClient } from '../../src/helper/csdsClient';
 import { BaseConfig, Config } from '../../src/client/clientConfig';
+import { RequestError } from 'request-promise/errors';
+import { Options } from 'request';
+import { IncomingMessage } from 'http';
 
 jest.mock('../../src/helper/csdsClient', () => {
   return {
@@ -105,10 +108,31 @@ describe('Client', () => {
 
       expect(request).toHaveBeenCalledTimes(1);
     });
+
+    test('should retry on receiving a network error', async () => {
+      requestMock.mockClear(); //  To ensure only current calls are included
+      requestMock.mockRejectedValueOnce(
+        new RequestError(
+          { code: 'ECONNRESET' },
+          {} as Options,
+          {} as IncomingMessage
+        )
+      );
+      const client = new Client(testConfig);
+
+      await expect(client.invoke({
+        lambdaUuid: '4714',
+        externalSystem: 'test-system',
+        body: {
+          payload: {},
+        },
+      })).resolves.toBeNonEmptyObject();
+      expect(requestMock).toHaveBeenCalledTimes(2);
+    })
   });
 
   describe('Unhappy flows', () => {
-    test('should throw if Funcitnos returns a none-okay status code', () => {
+    test('should throw if Functions returns a none-okay status code', () => {
       requestMock.mockRejectedValueOnce({
         response: {
           headers: [],
@@ -132,6 +156,32 @@ describe('Client', () => {
         name: 'FaaSInvokeError',
         message: expect.stringContaining('502 - Whoops'),
       });
+    });
+
+    test('should throw if network errors are raised continuously', async () => {
+      requestMock.mockClear(); //  To ensure only current calls are included
+      requestMock.mockRejectedValue(
+        new RequestError(
+          { code: 'ECONNRESET' },
+          {} as Options,
+          {} as IncomingMessage
+        )
+      );
+      const config: Config = { ...testConfig, failOnErrorStatusCode: true };
+      const client = new Client(config);
+
+
+      await expect(client.invoke({
+        lambdaUuid: '4714',
+        externalSystem: 'test-system',
+        body: {
+          payload: {},
+        },
+      })).rejects.toMatchObject({
+        name: 'FaaSInvokeError',
+      });
+
+      expect(requestMock).toHaveBeenCalledTimes(3);
     });
   });
 });

@@ -1,4 +1,3 @@
-import { AppJwtCredentials } from './../types/appJwtCredentials';
 import { IsImplementedCache } from './../helper/isImplementedCache';
 import request from 'request-promise';
 import { Guid } from 'guid-typescript';
@@ -7,6 +6,8 @@ import { Config, defaultConfig } from './clientConfig';
 import { Tooling, Fetch, GetCsdsEntry } from '../types/tooling';
 import { CsdsClient } from '../helper/csdsClient';
 import { RequestError } from 'request-promise/errors';
+import { RETRIABLE_ERRORS } from '../helper/networkErrors';
+import { sleep } from '../helper/common';
 
 const getTooling = (
   config: Required<Config>,
@@ -24,7 +25,13 @@ const getTooling = (
 
   const metricCollector = customTooling.metricCollector;
 
-  const defaultFetch: Fetch = async ({ url, body, headers, method }) => {
+  const isRetriableNetworkError = ({ cause }: RequestError): boolean =>
+    RETRIABLE_ERRORS.includes(cause?.code);
+
+  const defaultFetch: Fetch = async (
+    { url, body, headers, method },
+    attempt = 1
+  ) => {
     try {
       const resp = await request(url, {
         body,
@@ -46,7 +53,12 @@ const getTooling = (
       };
     } catch (error) {
       if (error instanceof RequestError) {
-        throw error;
+        if (!isRetriableNetworkError(error) || attempt === 3) {
+          throw error;
+        }
+
+        await sleep(attempt * 350); // 350 is the default value
+        return defaultFetch({ url, body, headers, method }, attempt + 1);
       }
       const { response: resp } = error;
       return {

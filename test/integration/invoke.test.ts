@@ -1,8 +1,6 @@
 import { AppJwtCredentials } from './../../src/types/appJwtCredentials';
 import { Client } from '../../src/client/client';
-import { stringLiteral } from '@babel/types';
 import { GetAuthorizationHeader } from '../../src/client/clientConfig';
-import { promisify } from 'util';
 import { createHmac } from 'crypto';
 import OAuth from 'oauth-1.0a';
 
