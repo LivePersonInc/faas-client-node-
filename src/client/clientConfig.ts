@@ -58,7 +58,7 @@ export const defaultConfig: Required<DefaultConfig> = {
   gwCsdsServiceName: 'faasGW',
   uiCsdsServiceName: 'faasUI',
   apiVersion: '1',
-  timeout: 65000, // ms
+  timeout: 30000, // ms
   protocol: PROTOCOL.HTTPS,
   getLambdasUri: 'api/account/%s/lambdas/',
   invokeUuidUri: 'api/account/%s/lambdas/%s/invoke',
