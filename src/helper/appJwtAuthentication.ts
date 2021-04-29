@@ -3,8 +3,8 @@ import {
   ModuleOptions as Oauth2Options,
   Token,
 } from 'simple-oauth2';
-import { decode as jwtDecode } from 'jsonwebtoken';
-import { GetCsdsEntry } from '../types/tooling';
+import {decode as jwtDecode} from 'jsonwebtoken';
+import {GetCsdsEntry} from '../types/tooling';
 import VError = require('verror');
 
 interface Options {
@@ -63,17 +63,17 @@ export class AppJwtAuthentication {
   private async getAccessToken() {
     if (this.isCurrentJwtExpiring()) {
       const options = await this.getOptions();
-      const { clientCredentials } = oauth2Create(options);
+      const {clientCredentials} = oauth2Create(options);
 
-      const { access_token }: Token = await clientCredentials.getToken({
+      const {access_token}: Token = await clientCredentials.getToken({
         scope: [],
       });
 
-      const jwt = jwtDecode(access_token) as any;
+      const jwt: unknown = jwtDecode(access_token);
 
       if (jwt !== null) {
         this.currentAccessToken = access_token;
-        this.currentJwt = jwt;
+        this.currentJwt = jwt as {exp: number};
       } else if (this.isJwtExpired(this.currentJwt)) {
         throw new VError(
           {
@@ -96,8 +96,8 @@ export class AppJwtAuthentication {
     );
   }
 
-  private isJwtExpired(jwt: any): boolean {
-    return Date.now() / 1000 > this.currentJwt.exp;
+  private isJwtExpired(jwt: Record<string, number>): boolean {
+    return Date.now() / 1000 > jwt.exp;
   }
 
   private async getOptions(): Promise<Oauth2Options> {

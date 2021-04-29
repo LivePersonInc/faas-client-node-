@@ -1,9 +1,9 @@
-import { EVENT, InvocationDomain } from './apiSpec';
-import { HTTTP_METHOD } from './getUrlOptions';
-import { BaseConfig } from '../client/clientConfig';
+import {EVENT, InvocationDomain} from './apiSpec';
+import {HTTP_METHOD} from './getUrlOptions';
+import {BaseConfig} from '../client/clientConfig';
 
 export interface BaseInvocation extends Partial<BaseConfig> {
-  readonly method?: typeof HTTTP_METHOD[keyof typeof HTTTP_METHOD];
+  readonly method?: typeof HTTP_METHOD[keyof typeof HTTP_METHOD];
   readonly externalSystem: string;
   readonly apiVersion?: string;
   readonly userId?: string;

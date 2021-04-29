@@ -1,7 +1,7 @@
-import { AppJwtCredentials } from './../../src/types/appJwtCredentials';
-import { Client } from '../../src/client/client';
-import { GetAuthorizationHeader } from '../../src/client/clientConfig';
-import { createHmac } from 'crypto';
+import {AppJwtCredentials} from './../../src/types/appJwtCredentials';
+import {Client} from '../../src/client/client';
+import {GetAuthorizationHeader} from '../../src/client/clientConfig';
+import {createHmac} from 'crypto';
 import OAuth from 'oauth-1.0a';
 
 const successLambdaUUID =
@@ -51,17 +51,15 @@ describe('Invoke by UUID', () => {
           key: oauthApiKey,
           secret: oauthApiSecret,
         },
-        // eslint-disable-next-line @typescript-eslint/camelcase
         signature_method: oauthSignatureMethod,
         realm: '',
-        // eslint-disable-next-line @typescript-eslint/camelcase
         hash_function: (baseString: string, key: string): string => {
           return createHmac(oauthSignatureMethod.split('-')[1], key)
             .update(baseString)
             .digest('base64');
         },
       });
-      return oAuth.toHeader(oAuth.authorize({ url, method })).Authorization;
+      return oAuth.toHeader(oAuth.authorize({url, method})).Authorization;
     };
     // custom auth implementation end
 

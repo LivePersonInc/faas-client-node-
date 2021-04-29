@@ -1,12 +1,12 @@
 import * as jwt from 'jsonwebtoken';
 import request from 'request-promise';
-import { BaseClient } from '../../src/client/baseClient';
-import { Client } from '../../src/client/client';
-import { CsdsClient } from '../../src/helper/csdsClient';
-import { BaseConfig, Config } from '../../src/client/clientConfig';
-import { RequestError } from 'request-promise/errors';
-import { Options } from 'request';
-import { IncomingMessage } from 'http';
+import {BaseClient} from '../../src/client/baseClient';
+import {Client} from '../../src/client/client';
+import {CsdsClient} from '../../src/helper/csdsClient';
+import {BaseConfig, Config} from '../../src/client/clientConfig';
+import {RequestError} from 'request-promise/errors';
+import {Options} from 'request';
+import {IncomingMessage} from 'http';
 
 jest.mock('../../src/helper/csdsClient', () => {
   return {
@@ -24,7 +24,7 @@ jest.mock('request-promise', () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: { resp: 'body' },
+      body: {resp: 'body'},
       ok: true,
       status: 200,
       statusText: 'OK',
@@ -84,7 +84,7 @@ describe('Client', () => {
         })
       ).resolves.toBeNonEmptyObject();
 
-      const client2 = new Client({ ...testConfig, accountId: 'le12345' });
+      const client2 = new Client({...testConfig, accountId: 'le12345'});
       await expect(
         client2.invoke({
           eventId: 'fooBar',
@@ -98,7 +98,7 @@ describe('Client', () => {
     });
 
     test('getLambdas method', async () => {
-      const client = new Client({ ...testConfig, accountId: 'fr12345' });
+      const client = new Client({...testConfig, accountId: 'fr12345'});
       await expect(
         client.getLambdas({
           accountId: '123456',
@@ -113,22 +113,24 @@ describe('Client', () => {
       requestMock.mockClear(); //  To ensure only current calls are included
       requestMock.mockRejectedValueOnce(
         new RequestError(
-          { code: 'ECONNRESET' },
+          {code: 'ECONNRESET'},
           {} as Options,
           {} as IncomingMessage
         )
       );
       const client = new Client(testConfig);
 
-      await expect(client.invoke({
-        lambdaUuid: '4714',
-        externalSystem: 'test-system',
-        body: {
-          payload: {},
-        },
-      })).resolves.toBeNonEmptyObject();
+      await expect(
+        client.invoke({
+          lambdaUuid: '4714',
+          externalSystem: 'test-system',
+          body: {
+            payload: {},
+          },
+        })
+      ).resolves.toBeNonEmptyObject();
       expect(requestMock).toHaveBeenCalledTimes(2);
-    })
+    });
   });
 
   describe('Unhappy flows', () => {
@@ -141,7 +143,7 @@ describe('Client', () => {
           statusMessage: 'Whoops',
         },
       });
-      const config: Config = { ...testConfig, failOnErrorStatusCode: true };
+      const config: Config = {...testConfig, failOnErrorStatusCode: true};
       const client = new Client(config);
 
       expect(
@@ -162,22 +164,23 @@ describe('Client', () => {
       requestMock.mockClear(); //  To ensure only current calls are included
       requestMock.mockRejectedValue(
         new RequestError(
-          { code: 'ECONNRESET' },
+          {code: 'ECONNRESET'},
           {} as Options,
           {} as IncomingMessage
         )
       );
-      const config: Config = { ...testConfig, failOnErrorStatusCode: true };
+      const config: Config = {...testConfig, failOnErrorStatusCode: true};
       const client = new Client(config);
 
-
-      await expect(client.invoke({
-        lambdaUuid: '4714',
-        externalSystem: 'test-system',
-        body: {
-          payload: {},
-        },
-      })).rejects.toMatchObject({
+      await expect(
+        client.invoke({
+          lambdaUuid: '4714',
+          externalSystem: 'test-system',
+          body: {
+            payload: {},
+          },
+        })
+      ).rejects.toMatchObject({
         name: 'FaaSInvokeError',
       });
 

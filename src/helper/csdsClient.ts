@@ -24,7 +24,7 @@ export class CsdsClient {
   async get(accountId: string, service: string): Promise<string> {
     const domains = await this.getCachedDomains(accountId);
 
-    const domain = domains.find(({ service: s }) => s === service);
+    const domain = domains.find(({service: s}) => s === service);
 
     if (domain) {
       return domain.baseURI;
@@ -47,7 +47,7 @@ export class CsdsClient {
     }
 
     try {
-      const { baseURIs } = await request(this.getUrl(accountId), {
+      const {baseURIs} = await request(this.getUrl(accountId), {
         json: true,
       });
 
@@ -67,7 +67,7 @@ export class CsdsClient {
           cause: error,
           name: 'CSDSFailure',
         },
-        `Error while fetching CSDS entries`
+        'Error while fetching CSDS entries'
       );
     }
   }

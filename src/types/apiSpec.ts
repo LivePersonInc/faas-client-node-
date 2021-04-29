@@ -26,7 +26,7 @@ export interface InvocationDomain {
   /**
    * Event / Call Payload
    */
-  payload: any;
+  payload: unknown;
 }
 
 export const EVENT = Object.freeze({

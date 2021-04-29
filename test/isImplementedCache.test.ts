@@ -1,4 +1,4 @@
-import { IsImplementedCache } from '../src/helper/isImplementedCache';
+import {IsImplementedCache} from '../src/helper/isImplementedCache';
 
 const event = 'event';
 let isImplementedCache: IsImplementedCache;

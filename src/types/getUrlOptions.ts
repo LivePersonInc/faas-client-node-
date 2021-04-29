@@ -6,10 +6,10 @@ export interface GetUrlOptions {
   readonly protocol: typeof PROTOCOL[keyof typeof PROTOCOL];
   readonly path: string;
 
-  readonly [others: string]: any;
+  readonly [others: string]: unknown;
 }
 
-export const HTTTP_METHOD = Object.freeze({
+export const HTTP_METHOD = Object.freeze({
   POST: 'post',
   GET: 'get',
 } as const);

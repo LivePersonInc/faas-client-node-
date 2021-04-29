@@ -10,6 +10,7 @@ after_success:
 
 node_js:
 - 10
+- 12
 - lts/*
 notifications:
   slack:

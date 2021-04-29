@@ -1,5 +1,5 @@
 import * as jwt from 'jsonwebtoken';
-import { AppJwtAuthentication } from '../../src/helper/appJwtAuthentication';
+import {AppJwtAuthentication} from '../../src/helper/appJwtAuthentication';
 
 const validAccessToken = jwt.sign(
   {
@@ -27,7 +27,7 @@ jest.mock('simple-oauth2', () => ({
   create: jest.fn(() => mockClientCredentials(validAccessToken)),
 }));
 
-import { create } from 'simple-oauth2';
+import {create} from 'simple-oauth2';
 
 const createMock = create as any;
 

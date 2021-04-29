@@ -4,7 +4,10 @@ import {
 } from '../src/helper/metricCollector';
 
 export class TestMetricCollector implements MetricCollector {
-  onInvoke(invocationData: InvocationMetricData): void {}
-  onGetLambdas(invocationData: InvocationMetricData): void {}
-  onIsImplemented(invocationData: InvocationMetricData): void {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onInvoke(_invocationData: InvocationMetricData): void {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onGetLambdas(_invocationData: InvocationMetricData): void {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onIsImplemented(_invocationData: InvocationMetricData): void {}
 }
