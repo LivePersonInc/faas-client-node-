@@ -1,22 +1,22 @@
-import { InvocationMetricData } from './../helper/metricCollector';
-import { format as createUrl } from 'url';
-import { format } from 'util';
+import {InvocationMetricData} from './../helper/metricCollector';
+import {format as createUrl} from 'url';
+import {format} from 'util';
 import VError = require('verror');
-import { HTTTP_METHOD, GetUrlOptions } from '../types/getUrlOptions';
-import { Config, DebugConfig, GetAuthorizationHeader } from './clientConfig';
-import { Tooling } from '../types/tooling';
-import { Response } from '../types/response';
+import {HTTP_METHOD, GetUrlOptions} from '../types/getUrlOptions';
+import {Config, DebugConfig, GetAuthorizationHeader} from './clientConfig';
+import {Tooling} from '../types/tooling';
+import {Response} from '../types/response';
 import {
   Invocation,
   EventInvocation,
   LambdaRequest,
   IsImplemented,
 } from '../types/invocationTypes';
-import { BaseQuery, GetLambdasQuery } from '../types/queries';
-import { ImplementedEvent } from '../helper/isImplementedCache';
-import { DoFetchOptions } from '../types/fetchOptions';
-import { AppJwtAuthentication } from '../helper/appJwtAuthentication';
-import { AppJwtCredentials } from '../types/appJwtCredentials';
+import {BaseQuery, GetLambdasQuery} from '../types/queries';
+import {ImplementedEvent} from '../helper/isImplementedCache';
+import {DoFetchOptions} from '../types/fetchOptions';
+import {AppJwtAuthentication} from '../helper/appJwtAuthentication';
+import {AppJwtCredentials} from '../types/appJwtCredentials';
 const stopwatch = require('statman-stopwatch');
 
 const name = 'faas-client-js';
@@ -178,7 +178,7 @@ export class BaseClient {
   }
   private async performInvocation(data: Invocation, domain: string) {
     const invokeData = {
-      method: HTTTP_METHOD.POST,
+      method: HTTP_METHOD.POST,
       ...this.config,
       ...data,
       requestId: this.tooling.generateId(),
@@ -204,7 +204,7 @@ export class BaseClient {
         ...invokeData,
       });
 
-      const resp = await this.doFetch({ url, ...invokeData });
+      const resp = await this.doFetch({url, ...invokeData});
       return resp;
     } catch (error) {
       throw new VError(
@@ -230,7 +230,7 @@ export class BaseClient {
     domain: string
   ): Promise<Response> {
     const requestData = {
-      method: HTTTP_METHOD.GET,
+      method: HTTP_METHOD.GET,
       ...this.config,
       ...data,
       requestId: this.tooling.generateId(),
@@ -249,7 +249,7 @@ export class BaseClient {
         query,
         ...requestData,
       });
-      const resp = await this.doFetch({ url, ...requestData });
+      const resp = await this.doFetch({url, ...requestData});
       return resp;
     } catch (error) {
       throw new VError(
@@ -270,7 +270,7 @@ export class BaseClient {
     domain: string
   ): Promise<boolean> {
     const isImplementedData = {
-      method: HTTTP_METHOD.GET,
+      method: HTTP_METHOD.GET,
       ...this.config,
       ...data,
       requestId: this.tooling.generateId(),
@@ -292,7 +292,7 @@ export class BaseClient {
         ...isImplementedData,
       });
       const {
-        body: { implemented },
+        body: {implemented},
       }: Response = (await this.doFetch({
         url,
         ...isImplementedData,
@@ -307,7 +307,7 @@ export class BaseClient {
           'Response could not be parsed'
         );
       }
-      return implemented;
+      return implemented as boolean;
     } catch (error) {
       throw new VError(
         {
@@ -326,13 +326,13 @@ export class BaseClient {
    * Base function to perform requests against the FaaS services.
    */
   protected async doFetch(options: DoFetchOptions): Promise<Response> {
-    const { url, body, method, requestId } = options;
+    const {url, body, method, requestId} = options;
     try {
       const requestOptions = {
         url,
-        body: options.body ? { timestamp: Date.now(), ...body } : undefined,
+        body: options.body ? {timestamp: Date.now(), ...body} : undefined,
         headers: {
-          Authorization: await this.getAuthorizationHeader({ url, method }),
+          Authorization: await this.getAuthorizationHeader({url, method}),
           'Content-Type': 'application/json',
           'User-Agent': `${name}@${version}`,
           'X-Request-ID': requestId,
@@ -346,7 +346,7 @@ export class BaseClient {
           {
             // the logged auth header should be invalid now, since the request with this header
             // was already triggered (and the nonce allows only using it once)
-            info: { response, requestOptions },
+            info: {response, requestOptions},
             name: 'HttpRequestError', // generic name, will be wrapped in the FaaS error
           },
           `Request did not respond with a success status: ${
@@ -377,19 +377,19 @@ export class BaseClient {
    * Internal method to retrieve and build the request URL for the FaaS services.
    */
   protected async getUrl(options: GetUrlOptions): Promise<string> {
-    const { accountId, domain, protocol, path, query } = options;
+    const {accountId, domain, protocol, path, query} = options;
     try {
       return createUrl({
         protocol,
         hostname: domain,
         pathname: path,
-        query,
+        query: query as string,
       });
     } catch (error) {
       throw new VError(
         {
           cause: error,
-          info: { options, ...this.getDebugConfig() },
+          info: {options, ...this.getDebugConfig()},
           name: 'FaaSCreateUrVError',
         },
         `Could not create URL. Failed to fetch domain for ${accountId}. Domain: ${domain}`
@@ -409,10 +409,10 @@ export class BaseClient {
       },
     };
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected isCustomLambdaError(error: any): boolean {
     if (error && error.name === 'HttpRequestError') {
-      const isDetailedError =
-        error.jse_info.response.body && error.jse_info.response.body.errorCode;
+      const isDetailedError = error.jse_info?.response?.body?.errorCode;
 
       if (
         isDetailedError &&
@@ -432,12 +432,12 @@ export class BaseClient {
     return typeof (invocation as EventInvocation).eventId === 'string';
   }
   private isAppJwtCredentials = (
-    authStrategy: any
+    authStrategy: unknown
   ): authStrategy is AppJwtCredentials => {
-    return authStrategy.clientId !== undefined;
+    return (authStrategy as Record<string, unknown>).clientId !== undefined;
   };
 
-  private getAppJwtAuthorizationHeader: any = (
+  private getAppJwtAuthorizationHeader = (
     appJwtCredentials: AppJwtCredentials,
     config: Config,
     tooling: Tooling
@@ -473,16 +473,20 @@ export class BaseClient {
     }
   }
 
-  private collectBaseMetricsFrom(data: any) {
+  private collectBaseMetricsFrom(
+    data: LambdaRequest | IsImplemented
+  ): Record<string, unknown> {
     return {
       accountId: this.config.accountId,
       domain: 'unresolved',
       fromCache: false,
-      externalSystem: data.externalSystem,
-    } as any;
+      externalSystem: data?.externalSystem,
+    };
   }
 
-  private collectBaseMetricsForInvokeFrom(data: Invocation): any {
+  private collectBaseMetricsForInvokeFrom(
+    data: Invocation
+  ): Record<string, unknown> {
     const baseMetrics = {
       accountId: this.config.accountId,
       domain: 'unresolved',
@@ -501,8 +505,8 @@ export class BaseClient {
   }
 
   private enhanceBaseMetrics(
-    baseMetrics: any,
-    additionalMetrics: any
+    baseMetrics: {},
+    additionalMetrics: {}
   ): InvocationMetricData {
     const enhancedMetrics = Object.assign({}, baseMetrics, additionalMetrics);
     return enhancedMetrics as InvocationMetricData;

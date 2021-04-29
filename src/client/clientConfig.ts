@@ -1,5 +1,5 @@
-import { AppJwtCredentials } from './../types/appJwtCredentials';
-import { PROTOCOL } from '../types/getUrlOptions';
+import {AppJwtCredentials} from './../types/appJwtCredentials';
+import {PROTOCOL} from '../types/getUrlOptions';
 export interface BaseConfig {
   /**
    * The accountId/siteId.
@@ -25,7 +25,7 @@ export interface DefaultConfig {
   readonly isImplementedUri?: string;
   readonly failOnErrorStatusCode?: boolean;
   /** Optional HTTP request headers that should be included in CSDS requests. */
-  readonly csdsHttpHeaders?: { [key: string]: any };
+  readonly csdsHttpHeaders?: {[key: string]: unknown};
   readonly csdsTtlSeconds?: number;
   /**
    * Time after which the JWT should be refreshed.
@@ -36,7 +36,7 @@ export interface DefaultConfig {
 }
 
 export interface DebugConfig {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export type Config = BaseConfig & DefaultConfig;

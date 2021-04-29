@@ -2,7 +2,7 @@
  * Testing stuff.
  */
 
-const { Client } = require('./build/src');
+const {Client} = require('./build/src');
 
 const client = new Client({
   accountId: '',
@@ -24,7 +24,7 @@ client
     },
   })
   .then(console.info)
-  .catch(({ message }) => console.error(message));
+  .catch(({message}) => console.error(message));
 
 client
   .invoke({

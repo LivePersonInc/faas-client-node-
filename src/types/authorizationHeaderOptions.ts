@@ -1,6 +1,6 @@
-import { HTTTP_METHOD } from './getUrlOptions';
+import {HTTP_METHOD} from './getUrlOptions';
 export interface AuthorizationHeaderOptions {
   readonly url: string;
-  readonly method: typeof HTTTP_METHOD[keyof typeof HTTTP_METHOD];
-  readonly [others: string]: any;
+  readonly method: typeof HTTP_METHOD[keyof typeof HTTP_METHOD];
+  readonly [others: string]: unknown;
 }

@@ -1,15 +1,11 @@
-import { VError } from 'verror';
-import {
-  DefaultConfig,
-  BaseConfig,
-  Config,
-} from '../../src/client/clientConfig';
-import { PROTOCOL, HTTTP_METHOD } from '../../src/types/getUrlOptions';
-import { Tooling } from '../../src/types/tooling';
-import { IsImplementedCache } from '../../src/helper/isImplementedCache';
-import { Response } from '../../src/types/response';
-import { Invocation, LambdaRequest } from '../../src/types/invocationTypes';
-import { BaseClient, EVENT } from '../../src';
+import {VError} from 'verror';
+import {DefaultConfig, BaseConfig, Config} from '../../src/client/clientConfig';
+import {PROTOCOL, HTTP_METHOD} from '../../src/types/getUrlOptions';
+import {Tooling} from '../../src/types/tooling';
+import {IsImplementedCache} from '../../src/helper/isImplementedCache';
+import {Response} from '../../src/types/response';
+import {Invocation, LambdaRequest} from '../../src/types/invocationTypes';
+import {BaseClient, EVENT} from '../../src';
 
 const defaultTestConfig: Required<DefaultConfig> = {
   gwCsdsServiceName: 'faasGW',
@@ -101,7 +97,7 @@ const invoke = async (data: Invocation): Promise<Response> => {
         'User-Agent': expect.toBeNonEmptyString(),
         'X-Request-ID': expect.toBeNonEmptyString(),
       }),
-      method: HTTTP_METHOD.POST,
+      method: HTTP_METHOD.POST,
     })
   );
   return resp;
@@ -136,7 +132,7 @@ const getLambdas = async (data: LambdaRequest): Promise<Response> => {
         'User-Agent': expect.toBeNonEmptyString(),
         'X-Request-ID': expect.toBeNonEmptyString(),
       }),
-      method: HTTTP_METHOD.GET,
+      method: HTTP_METHOD.GET,
     })
   );
   return resp;
@@ -159,7 +155,7 @@ describe('Base Client', () => {
       expect.hasAssertions();
       await invoke({
         eventId: EVENT.MessagingNewConversation,
-        body: { payload: null },
+        body: {payload: null},
         externalSystem: 'test',
       });
     });
@@ -168,7 +164,7 @@ describe('Base Client', () => {
       expect.hasAssertions();
       await invoke({
         lambdaUuid: '12345678',
-        body: { payload: null },
+        body: {payload: null},
         externalSystem: 'test',
       });
     });
@@ -212,7 +208,7 @@ describe('Base Client', () => {
             'User-Agent': expect.toBeNonEmptyString(),
             'X-Request-ID': expect.toBeNonEmptyString(),
           }),
-          method: HTTTP_METHOD.GET,
+          method: HTTP_METHOD.GET,
         })
       );
     });
@@ -338,7 +334,7 @@ describe('Base Client', () => {
       await expect(
         client.invoke({
           eventId: EVENT.MessagingNewConversation,
-          body: { payload: null },
+          body: {payload: null},
           externalSystem: 'test',
         })
       ).rejects.toBeInstanceOf(VError);
@@ -378,7 +374,7 @@ describe('Base Client', () => {
       await expect(
         client.invoke({
           lambdaUuid: '12345678',
-          body: { payload: null },
+          body: {payload: null},
           externalSystem: 'test',
         })
       ).rejects.toBeInstanceOf(VError);
@@ -408,7 +404,7 @@ describe('Base Client', () => {
       await expect(
         client.invoke({
           lambdaUuid: '12345678',
-          body: { payload: null },
+          body: {payload: null},
           externalSystem: 'test',
         })
       ).rejects.toBeInstanceOf(VError);
@@ -444,13 +440,13 @@ describe('Base Client', () => {
         })),
       };
 
-      const customTestConfig = { ...testConfig, failOnErrorStatusCode: true };
+      const customTestConfig = {...testConfig, failOnErrorStatusCode: true};
 
       const client = new BaseClient(customTestConfig, failureTooling);
       await expect(
         client.invoke({
           lambdaUuid: '12345678',
-          body: { payload: null },
+          body: {payload: null},
           externalSystem: 'test',
         })
       ).rejects.toMatchObject({
@@ -485,13 +481,13 @@ describe('Base Client', () => {
         })),
       };
 
-      const customTestConfig = { ...testConfig, failOnErrorStatusCode: true };
+      const customTestConfig = {...testConfig, failOnErrorStatusCode: true};
 
       const client = new BaseClient(customTestConfig, failureTooling);
       await expect(
         client.invoke({
           lambdaUuid: '12345678',
-          body: { payload: null },
+          body: {payload: null},
           externalSystem: 'test',
         })
       ).rejects.toMatchObject({
@@ -552,7 +548,7 @@ describe('Base Client', () => {
           })
         ),
       };
-      const customTestConfig = { ...testConfig, failOnErrorStatusCode: true };
+      const customTestConfig = {...testConfig, failOnErrorStatusCode: true};
 
       const client = new BaseClient(customTestConfig, failureTooling);
       await expect(

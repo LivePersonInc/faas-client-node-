@@ -1,13 +1,13 @@
-import { IsImplementedCache } from './../helper/isImplementedCache';
+import {IsImplementedCache} from './../helper/isImplementedCache';
 import request from 'request-promise';
-import { Guid } from 'guid-typescript';
-import { BaseClient } from './baseClient';
-import { Config, defaultConfig } from './clientConfig';
-import { Tooling, Fetch, GetCsdsEntry } from '../types/tooling';
-import { CsdsClient } from '../helper/csdsClient';
-import { RequestError } from 'request-promise/errors';
-import { RETRIABLE_ERRORS } from '../helper/networkErrors';
-import { sleep } from '../helper/common';
+import {Guid} from 'guid-typescript';
+import {BaseClient} from './baseClient';
+import {Config, defaultConfig} from './clientConfig';
+import {Tooling, Fetch, GetCsdsEntry} from '../types/tooling';
+import {CsdsClient} from '../helper/csdsClient';
+import {RequestError} from 'request-promise/errors';
+import {RETRIABLE_ERRORS} from '../helper/networkErrors';
+import {sleep} from '../helper/common';
 
 const getTooling = (
   config: Required<Config>,
@@ -25,11 +25,11 @@ const getTooling = (
 
   const metricCollector = customTooling.metricCollector;
 
-  const isRetriableNetworkError = ({ cause }: RequestError): boolean =>
+  const isRetriableNetworkError = ({cause}: RequestError): boolean =>
     RETRIABLE_ERRORS.includes(cause?.code);
 
   const defaultFetch: Fetch = async (
-    { url, body, headers, method },
+    {url, body, headers, method},
     attempt = 1
   ) => {
     try {
@@ -58,9 +58,9 @@ const getTooling = (
         }
 
         await sleep(attempt * 350); // 350 is the default value
-        return defaultFetch({ url, body, headers, method }, attempt + 1);
+        return defaultFetch({url, body, headers, method}, attempt + 1);
       }
-      const { response: resp } = error;
+      const {response: resp} = error;
       return {
         url,
         headers: resp.headers,
@@ -98,7 +98,7 @@ export class Client extends BaseClient {
    * @param tooling Optional tooling used internally in the client, usually only needed for debugging/testing purposes.
    */
   constructor(config: Config, tooling?: Tooling) {
-    const configuration = { ...defaultConfig, ...config };
+    const configuration = {...defaultConfig, ...config};
     super(configuration, getTooling(configuration, tooling));
   }
 }
