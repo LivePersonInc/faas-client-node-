@@ -2,6 +2,7 @@ export interface ImplementedEvent {
   name: string;
   exp: number;
   isImplemented: boolean;
+  skillId?: string;
 }
 
 export class IsImplementedCache {
@@ -20,7 +21,7 @@ export class IsImplementedCache {
     return undefined;
   }
 
-  add(eventName: string, isImplemented: boolean): void {
+  add(eventName: string, isImplemented: boolean, skillId?: string): void {
     const event: ImplementedEvent | undefined = this.get(eventName);
     if (event) {
       this.removeFromCache(event);
@@ -29,6 +30,7 @@ export class IsImplementedCache {
       name: eventName,
       exp: Date.now() + this.cacheDuration * 1000,
       isImplemented,
+      skillId,
     };
     this.cache.push(newEvent);
   }

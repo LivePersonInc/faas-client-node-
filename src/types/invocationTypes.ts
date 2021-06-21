@@ -7,6 +7,7 @@ export interface BaseInvocation extends Partial<BaseConfig> {
   readonly externalSystem: string;
   readonly apiVersion?: string;
   readonly userId?: string;
+  readonly skillId?: string;
 }
 
 export interface BasePostInvocation extends BaseInvocation {

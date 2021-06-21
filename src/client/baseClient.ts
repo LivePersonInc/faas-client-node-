@@ -132,11 +132,8 @@ export class BaseClient {
     baseMetrics.event = isImplementedRequestData.eventId;
     const watch = new stopwatch();
     watch.start();
-    const cachedEvent:
-      | ImplementedEvent
-      | undefined = this.tooling.isImplementedCache.get(
-      isImplementedRequestData.eventId
-    );
+    const cachedEvent: ImplementedEvent | undefined =
+      this.tooling.isImplementedCache.get(isImplementedRequestData.eventId);
     if (cachedEvent !== undefined) {
       const successFromCacheMetric = this.enhanceBaseMetrics(baseMetrics, {
         fromCache: true,
@@ -160,7 +157,8 @@ export class BaseClient {
         this.tooling.metricCollector?.onIsImplemented(successMetric);
         this.tooling.isImplementedCache.add(
           isImplementedRequestData.eventId,
-          implemented
+          implemented,
+          isImplementedRequestData.skillId
         );
         return implemented;
       } catch (error) {
@@ -293,12 +291,10 @@ export class BaseClient {
       });
       const {
         body: {implemented},
-      }: Response = (await this.doFetch({
+      }: Response = await this.doFetch({
         url,
         ...isImplementedData,
-      })) || {
-        body: {},
-      };
+      });
       if (implemented === undefined) {
         throw new VError(
           {
