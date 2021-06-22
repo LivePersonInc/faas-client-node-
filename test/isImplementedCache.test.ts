@@ -14,15 +14,15 @@ describe('ImplementedCache', () => {
         isImplementedCache.add(event, true);
 
         expect(isImplementedCache.get(event)).toBeDefined();
-        expect(isImplementedCache.get(event)?.isImplemented).toBe(true);
+        expect(isImplementedCache.get(event)?.isImplemented).toBeTrue();
       }
     );
     it('should overwrite a specific event that already exists in cache', () => {
       isImplementedCache.add(event, true);
-      isImplementedCache.add(event, true);
+      isImplementedCache.add(event, false);
 
       expect(isImplementedCache.get(event)).toBeDefined();
-      expect(isImplementedCache.get(event)?.isImplemented).toBe(false);
+      expect(isImplementedCache.get(event)?.isImplemented).toBeFalse();
     });
     it('should not return an event that is expired', () => {
       isImplementedCache = new IsImplementedCache(-2);
@@ -35,6 +35,7 @@ describe('ImplementedCache', () => {
 
       expect(isImplementedCache.get(event)).toBeDefined();
       expect(isImplementedCache.get(event)?.skillId).toBeDefined();
+      expect(isImplementedCache.get(event)?.skillId).toBeString();
     });
   });
   // No unhappy flows since cache does not throw any errors
