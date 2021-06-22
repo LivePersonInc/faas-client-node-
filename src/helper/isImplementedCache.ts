@@ -11,16 +11,11 @@ export class IsImplementedCache {
   constructor(private cacheDuration: number) {}
 
   get(eventName: string, skillId?: string): ImplementedEvent | undefined {
-    let event: ImplementedEvent | undefined;
-    if (skillId) {
-      event = this.cache.find(e => {
-        return e.name === eventName && e.skillId === skillId;
-      });
-    } else {
-      event = this.cache.find(e => {
-        return e.name === eventName;
-      });
-    }
+    const event: ImplementedEvent | undefined = this.cache.find(e => {
+      return skillId
+        ? e.name === eventName && e.skillId === skillId
+        : e.name === eventName;
+    });
     if (event) {
       if (event.exp > Date.now()) return event;
       this.removeFromCache(event);

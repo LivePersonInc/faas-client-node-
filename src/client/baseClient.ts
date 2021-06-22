@@ -482,6 +482,7 @@ export class BaseClient {
       domain: 'unresolved',
       fromCache: false,
       externalSystem: data?.externalSystem,
+      skillId: data?.skillId,
     };
   }
 

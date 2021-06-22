@@ -31,11 +31,11 @@ describe('ImplementedCache', () => {
       expect(isImplementedCache.get(event)).toBeUndefined();
     });
     it('should return an event that has skillId', () => {
-      isImplementedCache.add(event, true, 'smapleSkill');
+      isImplementedCache.add(event, true, 'sampleSkill');
 
-      expect(isImplementedCache.get(event,'smapleSkill')).toBeDefined();
-      expect(isImplementedCache.get(event,'smapleSkill')?.skillId).toBeDefined();
-      expect(isImplementedCache.get(event,'smapleSkill')?.skillId).toBeString();
+      expect(isImplementedCache.get(event,'sampleSkill')).toBeDefined();
+      expect(isImplementedCache.get(event,'sampleSkill')?.skillId).toBeString();
+      expect(isImplementedCache.get(event,'sampleSkill')?.skillId).toEqual('sampleSkill');
     });
     it('should not return an event when filtering by wrong skillId', () => {
       isImplementedCache.add(event, true,'skill');
