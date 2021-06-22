@@ -132,7 +132,8 @@ export class BaseClient {
     baseMetrics.event = isImplementedRequestData.eventId;
     const watch = new stopwatch();
     watch.start();
-    const cachedEvent: ImplementedEvent
+    const cachedEvent:
+      | ImplementedEvent
       | undefined = this.tooling.isImplementedCache.get(
       isImplementedRequestData.eventId
     );
