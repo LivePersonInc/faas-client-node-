@@ -33,9 +33,14 @@ describe('ImplementedCache', () => {
     it('should return an event that has skillId', () => {
       isImplementedCache.add(event, true, 'smapleSkill');
 
-      expect(isImplementedCache.get(event)).toBeDefined();
-      expect(isImplementedCache.get(event)?.skillId).toBeDefined();
-      expect(isImplementedCache.get(event)?.skillId).toBeString();
+      expect(isImplementedCache.get(event,'smapleSkill')).toBeDefined();
+      expect(isImplementedCache.get(event,'smapleSkill')?.skillId).toBeDefined();
+      expect(isImplementedCache.get(event,'smapleSkill')?.skillId).toBeString();
+    });
+    it('should not return an event when filtering by wrong skillId', () => {
+      isImplementedCache.add(event, true,'skill');
+
+      expect(isImplementedCache.get(event,'skillsample')).toBeUndefined();
     });
   });
   // No unhappy flows since cache does not throw any errors
