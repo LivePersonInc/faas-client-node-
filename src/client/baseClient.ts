@@ -135,7 +135,8 @@ export class BaseClient {
     const cachedEvent:
       | ImplementedEvent
       | undefined = this.tooling.isImplementedCache.get(
-      isImplementedRequestData.eventId
+      isImplementedRequestData.eventId,
+      isImplementedRequestData.skillId
     );
     if (cachedEvent !== undefined) {
       const successFromCacheMetric = this.enhanceBaseMetrics(baseMetrics, {
