@@ -132,8 +132,10 @@ export class BaseClient {
     baseMetrics.event = isImplementedRequestData.eventId;
     const watch = new stopwatch();
     watch.start();
-    const cachedEvent: ImplementedEvent | undefined =
-      this.tooling.isImplementedCache.get(isImplementedRequestData.eventId);
+    const cachedEvent: ImplementedEvent
+      | undefined = this.tooling.isImplementedCache.get(
+      isImplementedRequestData.eventId
+    );
     if (cachedEvent !== undefined) {
       const successFromCacheMetric = this.enhanceBaseMetrics(baseMetrics, {
         fromCache: true,
