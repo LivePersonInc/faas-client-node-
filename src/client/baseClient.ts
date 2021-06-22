@@ -281,6 +281,7 @@ export class BaseClient {
       );
       const query: BaseQuery = {
         v: isImplementedData.apiVersion,
+        skillId: isImplementedData.skillId,
         externalSystem: isImplementedData.externalSystem,
       };
       const url = await this.getUrl({
