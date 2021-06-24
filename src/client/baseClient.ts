@@ -135,7 +135,8 @@ export class BaseClient {
     const cachedEvent:
       | ImplementedEvent
       | undefined = this.tooling.isImplementedCache.get(
-      isImplementedRequestData.eventId
+      isImplementedRequestData.eventId,
+      isImplementedRequestData.skillId
     );
     if (cachedEvent !== undefined) {
       const successFromCacheMetric = this.enhanceBaseMetrics(baseMetrics, {
@@ -160,7 +161,8 @@ export class BaseClient {
         this.tooling.metricCollector?.onIsImplemented(successMetric);
         this.tooling.isImplementedCache.add(
           isImplementedRequestData.eventId,
-          implemented
+          implemented,
+          isImplementedRequestData.skillId
         );
         return implemented;
       } catch (error) {
@@ -283,6 +285,7 @@ export class BaseClient {
       );
       const query: BaseQuery = {
         v: isImplementedData.apiVersion,
+        skillId: isImplementedData.skillId,
         externalSystem: isImplementedData.externalSystem,
       };
       const url = await this.getUrl({
@@ -293,12 +296,10 @@ export class BaseClient {
       });
       const {
         body: {implemented},
-      }: Response = (await this.doFetch({
+      }: Response = await this.doFetch({
         url,
         ...isImplementedData,
-      })) || {
-        body: {},
-      };
+      });
       if (implemented === undefined) {
         throw new VError(
           {
@@ -481,6 +482,7 @@ export class BaseClient {
       domain: 'unresolved',
       fromCache: false,
       externalSystem: data?.externalSystem,
+      skillId: data?.skillId,
     };
   }
 

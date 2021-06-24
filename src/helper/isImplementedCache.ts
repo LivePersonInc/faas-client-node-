@@ -2,6 +2,7 @@ export interface ImplementedEvent {
   name: string;
   exp: number;
   isImplemented: boolean;
+  skillId?: string;
 }
 
 export class IsImplementedCache {
@@ -9,9 +10,11 @@ export class IsImplementedCache {
 
   constructor(private cacheDuration: number) {}
 
-  get(eventName: string): ImplementedEvent | undefined {
+  get(eventName: string, skillId?: string): ImplementedEvent | undefined {
     const event: ImplementedEvent | undefined = this.cache.find(e => {
-      return e.name === eventName;
+      return skillId
+        ? e.name === eventName && e.skillId === skillId
+        : e.name === eventName;
     });
     if (event) {
       if (event.exp > Date.now()) return event;
@@ -20,8 +23,8 @@ export class IsImplementedCache {
     return undefined;
   }
 
-  add(eventName: string, isImplemented: boolean): void {
-    const event: ImplementedEvent | undefined = this.get(eventName);
+  add(eventName: string, isImplemented: boolean, skillId?: string): void {
+    const event: ImplementedEvent | undefined = this.get(eventName, skillId);
     if (event) {
       this.removeFromCache(event);
     }
@@ -29,6 +32,7 @@ export class IsImplementedCache {
       name: eventName,
       exp: Date.now() + this.cacheDuration * 1000,
       isImplemented,
+      skillId,
     };
     this.cache.push(newEvent);
   }

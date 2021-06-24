@@ -30,6 +30,18 @@ describe('ImplementedCache', () => {
 
       expect(isImplementedCache.get(event)).toBeUndefined();
     });
+    it('should return the event with the provided skillId', () => {
+      isImplementedCache.add(event, true, 'sampleSkill');
+
+      expect(isImplementedCache.get(event,'sampleSkill')).toBeDefined();
+      expect(isImplementedCache.get(event,'sampleSkill')?.skillId).toBeString();
+      expect(isImplementedCache.get(event,'sampleSkill')?.skillId).toEqual('sampleSkill');
+    });
+    it('hould not return an undefined if no entry for provided skillId was found', () => {
+      isImplementedCache.add(event, true,'skill');
+
+      expect(isImplementedCache.get(event,'skillsample')).toBeUndefined();
+    });
   });
   // No unhappy flows since cache does not throw any errors
 });

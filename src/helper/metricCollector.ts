@@ -9,6 +9,7 @@ export interface InvocationMetricData {
   statusCode?: number;
   error?: Error;
   fromCache?: boolean;
+  skillId?: string;
 }
 export interface MetricCollector {
   onInvoke(invocationData: InvocationMetricData): void;

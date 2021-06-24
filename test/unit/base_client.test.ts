@@ -293,6 +293,53 @@ describe('Base Client', () => {
       );
     });
 
+    test('isImplemented with skillId', async () => {
+      expect.hasAssertions();
+      const client = new BaseClient(testConfig, testTooling);
+      const hasBeenImplemented = await client.isImplemented({
+        eventId: EVENT.MessagingNewConversation,
+        externalSystem: 'test',
+        skillId: 'skill'
+      });
+      expect(testTooling.metricCollector.onIsImplemented).toHaveBeenCalledTimes(
+        1
+      );
+      expect(testTooling.metricCollector.onIsImplemented).toHaveBeenCalledWith(
+        expect.objectContaining({
+          accountId: testConfig.accountId,
+          event: EVENT.MessagingNewConversation,
+          skillId: 'skill',
+          externalSystem: 'test',
+          domain: 'test-domain.com',
+          fromCache: false,
+        })
+      );
+      expect(hasBeenImplemented).toBeTrue();
+      expect(testTooling.generateId).toHaveBeenCalledTimes(1);
+      expect(testTooling.getCsdsEntry).toHaveBeenCalledTimes(1);
+      expect(testTooling.fetch).toHaveBeenCalledTimes(1);
+      const hasBeenImplementedAgain = await client.isImplemented({
+        eventId: EVENT.MessagingNewConversation,
+        externalSystem: 'test',
+        skillId: 'skill'
+      });
+      // should still only have been called once as second call result was cached
+      expect(testTooling.fetch).toHaveBeenCalledTimes(1);
+      expect(hasBeenImplementedAgain).toBeTrue();
+      expect(testTooling.fetch).toHaveBeenCalledWith(
+        expect.objectContaining({
+          url: expect.toBeNonEmptyString(),
+          headers: expect.objectContaining({
+            Authorization: expect.toBeNonEmptyString(),
+            'Content-Type': expect.toBeNonEmptyString(),
+            'User-Agent': expect.toBeNonEmptyString(),
+            'X-Request-ID': expect.toBeNonEmptyString(),
+          }),
+          method: HTTP_METHOD.GET,
+        })
+      );
+    });
+
     test('getLambdas with filtering', async () => {
       expect.hasAssertions();
       await getLambdas({
