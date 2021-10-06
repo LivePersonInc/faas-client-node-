@@ -168,6 +168,26 @@ describe('Base Client', () => {
         externalSystem: 'test',
       });
     });
+    test('invoke method with eventId and SkillId', async () => {
+      expect.hasAssertions();
+      await invoke({
+        eventId: EVENT.MessagingNewConversation,
+        body: {payload: null},
+        externalSystem: 'test',
+        skillId:'1234'
+      });
+      expect(testTooling.metricCollector.onInvoke).toHaveBeenCalledTimes(1);
+      expect(testTooling.metricCollector.onInvoke).toHaveBeenCalledWith(
+        expect.objectContaining({
+          accountId: testConfig.accountId,
+          event: EVENT.MessagingNewConversation,
+          externalSystem: 'test',
+          fromCache: false,
+          skillId:'1234',
+          domain: 'test-domain.com',
+        })
+      );
+    });
 
     test('isImplemented method', async () => {
       expect.hasAssertions();

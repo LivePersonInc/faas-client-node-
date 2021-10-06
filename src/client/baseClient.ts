@@ -196,6 +196,7 @@ export class BaseClient {
 
     const query: BaseQuery = {
       v: invokeData.apiVersion,
+      skillId: data?.skillId,
       externalSystem: invokeData.externalSystem,
     };
     try {
@@ -499,6 +500,7 @@ export class BaseClient {
       ? {
           ...baseMetrics,
           event: data.eventId,
+          skillId: data?.skillId,
         }
       : {
           ...baseMetrics,
