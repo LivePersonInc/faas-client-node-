@@ -188,13 +188,35 @@ describe('Base Client', () => {
         })
       );
     });
-    test('invoke method with eventId and no SkillId', async () => {
+    test('should throw an error on invoke method with eventId and SkillId when skillId does not match event', async () => {
       expect.hasAssertions();
-      await invoke({
-        eventId: EVENT.MessagingNewConversation,
-        body: {payload: null},
-        externalSystem: 'test',
+      const failureTooling = {
+        ...testTooling,
+        fetch: jest.fn(() =>
+          Promise.resolve({
+            body: {},
+            headers: {},
+            url: 'https://test-domain.com/',
+            ok: false,
+            status: 404,
+            statusText: 'Not Found',
+          })
+        ),
+      };
+      const customTestConfig = {...testConfig, failOnErrorStatusCode: true};
+
+      const client = new BaseClient(customTestConfig, failureTooling);
+      await expect(
+        client.invoke({
+          eventId: EVENT.MessagingNewConversation,
+          body: {payload: null},
+          externalSystem: 'test',
+          skillId: '123',
+        })
+      ).rejects.toMatchObject({
+        name: 'FaaSInvokeError',
       });
+
       expect(testTooling.metricCollector.onInvoke).toHaveBeenCalledTimes(1);
       expect(testTooling.metricCollector.onInvoke).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -202,7 +224,7 @@ describe('Base Client', () => {
           event: EVENT.MessagingNewConversation,
           externalSystem: 'test',
           fromCache: false,
-          skillId: undefined,
+          skillId: '123',
           domain: 'test-domain.com',
         })
       );
