@@ -174,7 +174,7 @@ describe('Base Client', () => {
         eventId: EVENT.MessagingNewConversation,
         body: {payload: null},
         externalSystem: 'test',
-        skillId:'1234'
+        skillId: '1234',
       });
       expect(testTooling.metricCollector.onInvoke).toHaveBeenCalledTimes(1);
       expect(testTooling.metricCollector.onInvoke).toHaveBeenCalledWith(
@@ -183,12 +183,30 @@ describe('Base Client', () => {
           event: EVENT.MessagingNewConversation,
           externalSystem: 'test',
           fromCache: false,
-          skillId:'1234',
+          skillId: '1234',
           domain: 'test-domain.com',
         })
       );
     });
-
+    test('invoke method with eventId and no SkillId', async () => {
+      expect.hasAssertions();
+      await invoke({
+        eventId: EVENT.MessagingNewConversation,
+        body: {payload: null},
+        externalSystem: 'test',
+      });
+      expect(testTooling.metricCollector.onInvoke).toHaveBeenCalledTimes(1);
+      expect(testTooling.metricCollector.onInvoke).toHaveBeenCalledWith(
+        expect.objectContaining({
+          accountId: testConfig.accountId,
+          event: EVENT.MessagingNewConversation,
+          externalSystem: 'test',
+          fromCache: false,
+          skillId: undefined,
+          domain: 'test-domain.com',
+        })
+      );
+    });
     test('isImplemented method', async () => {
       expect.hasAssertions();
       const client = new BaseClient(testConfig, testTooling);
@@ -319,7 +337,7 @@ describe('Base Client', () => {
       const hasBeenImplemented = await client.isImplemented({
         eventId: EVENT.MessagingNewConversation,
         externalSystem: 'test',
-        skillId: 'skill'
+        skillId: 'skill',
       });
       expect(testTooling.metricCollector.onIsImplemented).toHaveBeenCalledTimes(
         1
@@ -341,7 +359,7 @@ describe('Base Client', () => {
       const hasBeenImplementedAgain = await client.isImplemented({
         eventId: EVENT.MessagingNewConversation,
         externalSystem: 'test',
-        skillId: 'skill'
+        skillId: 'skill',
       });
       // should still only have been called once as second call result was cached
       expect(testTooling.fetch).toHaveBeenCalledTimes(1);
