@@ -168,7 +168,67 @@ describe('Base Client', () => {
         externalSystem: 'test',
       });
     });
+    test('invoke method with eventId and SkillId', async () => {
+      expect.hasAssertions();
+      await invoke({
+        eventId: EVENT.MessagingNewConversation,
+        body: {payload: null},
+        externalSystem: 'test',
+        skillId: '1234',
+      });
+      expect(testTooling.metricCollector.onInvoke).toHaveBeenCalledTimes(1);
+      expect(testTooling.metricCollector.onInvoke).toHaveBeenCalledWith(
+        expect.objectContaining({
+          accountId: testConfig.accountId,
+          event: EVENT.MessagingNewConversation,
+          externalSystem: 'test',
+          fromCache: false,
+          skillId: '1234',
+          domain: 'test-domain.com',
+        })
+      );
+    });
+    test('should throw an error on invoke method with eventId and SkillId when skillId does not match event', async () => {
+      expect.hasAssertions();
+      const failureTooling = {
+        ...testTooling,
+        fetch: jest.fn(() =>
+          Promise.resolve({
+            body: {},
+            headers: {},
+            url: 'https://test-domain.com/',
+            ok: false,
+            status: 404,
+            statusText: 'Not Found',
+          })
+        ),
+      };
+      const customTestConfig = {...testConfig, failOnErrorStatusCode: true};
 
+      const client = new BaseClient(customTestConfig, failureTooling);
+      await expect(
+        client.invoke({
+          eventId: EVENT.MessagingNewConversation,
+          body: {payload: null},
+          externalSystem: 'test',
+          skillId: '123',
+        })
+      ).rejects.toMatchObject({
+        name: 'FaaSInvokeError',
+      });
+
+      expect(testTooling.metricCollector.onInvoke).toHaveBeenCalledTimes(1);
+      expect(testTooling.metricCollector.onInvoke).toHaveBeenCalledWith(
+        expect.objectContaining({
+          accountId: testConfig.accountId,
+          event: EVENT.MessagingNewConversation,
+          externalSystem: 'test',
+          fromCache: false,
+          skillId: '123',
+          domain: 'test-domain.com',
+        })
+      );
+    });
     test('isImplemented method', async () => {
       expect.hasAssertions();
       const client = new BaseClient(testConfig, testTooling);
@@ -299,7 +359,7 @@ describe('Base Client', () => {
       const hasBeenImplemented = await client.isImplemented({
         eventId: EVENT.MessagingNewConversation,
         externalSystem: 'test',
-        skillId: 'skill'
+        skillId: 'skill',
       });
       expect(testTooling.metricCollector.onIsImplemented).toHaveBeenCalledTimes(
         1
@@ -321,7 +381,7 @@ describe('Base Client', () => {
       const hasBeenImplementedAgain = await client.isImplemented({
         eventId: EVENT.MessagingNewConversation,
         externalSystem: 'test',
-        skillId: 'skill'
+        skillId: 'skill',
       });
       // should still only have been called once as second call result was cached
       expect(testTooling.fetch).toHaveBeenCalledTimes(1);

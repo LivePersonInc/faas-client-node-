@@ -37,7 +37,7 @@ describe('ImplementedCache', () => {
       expect(isImplementedCache.get(event,'sampleSkill')?.skillId).toBeString();
       expect(isImplementedCache.get(event,'sampleSkill')?.skillId).toEqual('sampleSkill');
     });
-    it('hould not return an undefined if no entry for provided skillId was found', () => {
+    it('should not return an undefined if no entry for provided skillId was found', () => {
       isImplementedCache.add(event, true,'skill');
 
       expect(isImplementedCache.get(event,'skillsample')).toBeUndefined();

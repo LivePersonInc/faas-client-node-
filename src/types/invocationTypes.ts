@@ -18,6 +18,7 @@ export interface EventRequest {
   // setting specifying it with "| string" allows to the use of future event names that are not bundled
   // in the current typings
   readonly eventId: typeof EVENT[keyof typeof EVENT] | string;
+  readonly skillId?: string;
 }
 
 export interface FilterLambdas extends Partial<EventRequest> {
