@@ -64,7 +64,7 @@ export class CsdsClient {
     } catch (error) {
       throw new VError(
         {
-          cause: error,
+          cause: error as Error,
           name: 'CSDSFailure',
         },
         'Error while fetching CSDS entries'

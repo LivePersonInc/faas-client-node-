@@ -17,6 +17,7 @@ import {ImplementedEvent} from '../helper/isImplementedCache';
 import {DoFetchOptions} from '../types/fetchOptions';
 import {AppJwtAuthentication} from '../helper/appJwtAuthentication';
 import {AppJwtCredentials} from '../types/appJwtCredentials';
+import {RequestError} from 'request-promise/errors';
 const stopwatch = require('statman-stopwatch');
 
 const name = 'faas-client-js';
@@ -75,7 +76,8 @@ export class BaseClient {
       return response;
     } catch (error) {
       const failureMetric = this.enhanceBaseMetrics(baseMetrics, {
-        statusCode: error.cause?.jse_cause?.jse_info?.response?.status,
+        statusCode: (error as RequestError).cause?.jse_cause?.jse_info?.response
+          ?.status,
         error,
       });
       this.tooling.metricCollector?.onInvoke(failureMetric);
@@ -112,7 +114,8 @@ export class BaseClient {
     } catch (error) {
       const failureMetric = this.enhanceBaseMetrics(baseMetrics, {
         requestDurationInMillis: watch.read(),
-        statusCode: error.cause?.jse_cause?.jse_info?.response?.status,
+        statusCode: (error as RequestError).cause?.jse_cause?.jse_info?.response
+          ?.status,
         error,
       });
       this.tooling.metricCollector?.onGetLambdas(failureMetric);
@@ -132,12 +135,11 @@ export class BaseClient {
     baseMetrics.event = isImplementedRequestData.eventId;
     const watch = new stopwatch();
     watch.start();
-    const cachedEvent:
-      | ImplementedEvent
-      | undefined = this.tooling.isImplementedCache.get(
-      isImplementedRequestData.eventId,
-      isImplementedRequestData.skillId
-    );
+    const cachedEvent: ImplementedEvent | undefined =
+      this.tooling.isImplementedCache.get(
+        isImplementedRequestData.eventId,
+        isImplementedRequestData.skillId
+      );
     if (cachedEvent !== undefined) {
       const successFromCacheMetric = this.enhanceBaseMetrics(baseMetrics, {
         fromCache: true,
@@ -168,7 +170,8 @@ export class BaseClient {
       } catch (error) {
         const failureMetric = this.enhanceBaseMetrics(baseMetrics, {
           requestDurationInMillis: watch.read(),
-          statusCode: error.cause?.jse_cause?.jse_info?.response?.status,
+          statusCode: (error as RequestError).cause?.jse_cause?.jse_info
+            ?.response?.status,
           error,
         });
         this.tooling.metricCollector?.onIsImplemented(failureMetric);
@@ -212,11 +215,11 @@ export class BaseClient {
     } catch (error) {
       throw new VError(
         {
-          cause: error,
+          cause: error as Error,
           info: {
             ...this.getDebugConfig(),
           },
-          name: this.isCustomLambdaError(error.cause())
+          name: this.isCustomLambdaError((error as RequestError).cause())
             ? 'FaaSLambdaError'
             : 'FaaSInvokeError',
         },
@@ -257,7 +260,7 @@ export class BaseClient {
     } catch (error) {
       throw new VError(
         {
-          cause: error,
+          cause: error as Error,
           info: {
             ...this.getDebugConfig(),
           },
@@ -313,7 +316,7 @@ export class BaseClient {
     } catch (error) {
       throw new VError(
         {
-          cause: error,
+          cause: error as Error,
           info: {
             ...this.getDebugConfig(),
           },
@@ -364,7 +367,7 @@ export class BaseClient {
     } catch (error) {
       throw new VError(
         {
-          cause: error,
+          cause: error as Error,
           info: {
             ...this.getDebugConfig(),
           },
@@ -390,7 +393,7 @@ export class BaseClient {
     } catch (error) {
       throw new VError(
         {
-          cause: error,
+          cause: error as Error,
           info: {options, ...this.getDebugConfig()},
           name: 'FaaSCreateUrVError',
         },
@@ -464,7 +467,7 @@ export class BaseClient {
     } catch (error) {
       throw new VError(
         {
-          cause: error,
+          cause: error as Error,
           info: {
             ...this.getDebugConfig(),
           },
