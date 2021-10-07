@@ -52,7 +52,7 @@ export class AppJwtAuthentication {
     } catch (error) {
       throw new VError(
         {
-          cause: error,
+          cause: error as Error,
           name: 'FaaSAppJWTAuthenticationError',
         },
         'Error while creating authentication bearer via AppJWT (Client Credentials)'

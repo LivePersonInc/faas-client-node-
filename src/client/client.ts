@@ -8,6 +8,8 @@ import {CsdsClient} from '../helper/csdsClient';
 import {RequestError} from 'request-promise/errors';
 import {RETRIABLE_ERRORS} from '../helper/networkErrors';
 import {sleep} from '../helper/common';
+import {Response} from '../types/response';
+import {FetchOptions} from '../types/fetchOptions';
 
 const getTooling = (
   config: Required<Config>,
@@ -60,15 +62,16 @@ const getTooling = (
         await sleep(attempt * 350); // 350 is the default value
         return defaultFetch({url, body, headers, method}, attempt + 1);
       }
-      const {response: resp} = error;
+
+      const {response: resp} = error as RequestError;
       return {
         url,
         headers: resp.headers,
-        body: resp.body,
+        body: (resp as FetchOptions).body,
         ok: false,
         status: resp.statusCode,
         statusText: resp.statusMessage,
-      };
+      } as Response;
     }
   };
 
