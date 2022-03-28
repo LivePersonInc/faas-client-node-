@@ -1,6 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 import {AppJwtAuthentication} from '../../src/helper/appJwtAuthentication';
-
+const secret = 'mySecret';
 const validAccessToken = jwt.sign(
   {
     aud: 'le4711',
@@ -10,7 +10,7 @@ const validAccessToken = jwt.sign(
     exp: Date.now() / 1000 + 60 * 60,
     iat: Date.now(),
   },
-  'mySecret'
+  secret
 );
 
 jest.genMockFromModule('simple-oauth2');

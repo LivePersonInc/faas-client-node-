@@ -8,6 +8,8 @@ import {RequestError} from 'request-promise/errors';
 import {Options} from 'request';
 import {IncomingMessage} from 'http';
 
+const secret = 'mySecret';
+
 jest.mock('../../src/helper/csdsClient', () => {
   return {
     CsdsClient: jest.fn().mockImplementation(() => {
@@ -43,7 +45,7 @@ jest.mock('simple-oauth2', () => ({
           exp: Date.now() / 1000 + 60 * 60,
           iat: Date.now(),
         },
-        'mySecret'
+        secret
       ),
     }),
   })),
