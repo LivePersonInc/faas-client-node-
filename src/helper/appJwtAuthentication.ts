@@ -1,5 +1,5 @@
 import {
-  create as oauth2Create,
+  ClientCredentials,
   ModuleOptions as Oauth2Options,
   Token,
 } from 'simple-oauth2';
@@ -63,9 +63,10 @@ export class AppJwtAuthentication {
   private async getAccessToken() {
     if (this.isCurrentJwtExpiring()) {
       const options = await this.getOptions();
-      const {clientCredentials} = oauth2Create(options);
 
-      const {access_token}: Token = await clientCredentials.getToken({
+      const client = new ClientCredentials(options);
+
+      const {access_token}: Token = await client.getToken({
         scope: [],
       });
 

@@ -13,23 +13,24 @@ const validAccessToken = jwt.sign(
   'mySecret'
 );
 
+jest.genMockFromModule('simple-oauth2');
+jest.mock('simple-oauth2');
+
 const invalidAccessToken = 'not-a-valid-token';
 
 const mockClientCredentials = (accessToken: string) => ({
-  clientCredentials: {
-    getToken: async () => ({
-      access_token: accessToken,
-    }),
-  },
+  getToken: async () => ({
+    access_token: accessToken,
+  }),
 });
 
 jest.mock('simple-oauth2', () => ({
-  create: jest.fn(() => mockClientCredentials(validAccessToken)),
+  ClientCredentials: jest.fn(() => mockClientCredentials(validAccessToken)),
 }));
 
-import {create} from 'simple-oauth2';
+import {ClientCredentials} from 'simple-oauth2';
 
-const createMock = create as any;
+const createMock = ClientCredentials as any;
 
 describe('AppJWT Authentication', () => {
   afterEach(jest.clearAllMocks);
@@ -46,7 +47,7 @@ describe('AppJWT Authentication', () => {
 
       const bearer = await auth.getHeader();
 
-      expect(create).toBeCalledTimes(1);
+      expect(ClientCredentials).toBeCalledTimes(1);
       expect(bearer).toBeNonEmptyString();
       expect(bearer).toContain('Bearer');
     });
@@ -62,7 +63,7 @@ describe('AppJWT Authentication', () => {
       await auth.getHeader();
       await auth.getHeader();
 
-      expect(create).toBeCalledTimes(1);
+      expect(ClientCredentials).toBeCalledTimes(1);
     });
   });
 
@@ -102,7 +103,7 @@ describe('AppJWT Authentication', () => {
       const bearer = await auth.getHeader();
       const bearer2 = await auth.getHeader();
 
-      expect(create).toBeCalledTimes(2);
+      expect(ClientCredentials).toBeCalledTimes(2);
       expect(bearer).toBeNonEmptyString();
       expect(bearer).toContain('Bearer');
       expect(bearer2).toEqual(bearer);
