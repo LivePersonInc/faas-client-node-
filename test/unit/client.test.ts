@@ -8,6 +8,8 @@ import {RequestError} from 'request-promise/errors';
 import {Options} from 'request';
 import {IncomingMessage} from 'http';
 
+const secret = 'mySecret';
+
 jest.mock('../../src/helper/csdsClient', () => {
   return {
     CsdsClient: jest.fn().mockImplementation(() => {
@@ -32,23 +34,21 @@ jest.mock('request-promise', () => {
   });
 });
 jest.mock('simple-oauth2', () => ({
-  create: () => ({
-    clientCredentials: {
-      getToken: async () => ({
-        access_token: jwt.sign(
-          {
-            aud: 'le4711',
-            azp: 'bf16f923-b256-40c8-afa5-1b8e8372da09',
-            scope: 'faas.lambda.invoke',
-            iss: 'Sentinel',
-            exp: Date.now() / 1000 + 60 * 60,
-            iat: Date.now(),
-          },
-          'mySecret'
-        ),
-      }),
-    },
-  }),
+  ClientCredentials: jest.fn(() => ({
+    getToken: async () => ({
+      access_token: jwt.sign(
+        {
+          aud: 'le4711',
+          azp: 'bf16f923-b256-40c8-afa5-1b8e8372da09',
+          scope: 'faas.lambda.invoke',
+          iss: 'Sentinel',
+          exp: Date.now() / 1000 + 60 * 60,
+          iat: Date.now(),
+        },
+        secret
+      ),
+    }),
+  })),
 }));
 
 const requestMock: jest.Mock<any> = request as any;
