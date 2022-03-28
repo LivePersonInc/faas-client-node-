@@ -15,7 +15,7 @@
     "prepare": "npm run compile",
     "pretest": "npm run compile",
     "test": "jest --coverage ./test/unit",
-    "test:singular": "jest test/unit/appJwtAuthentication.test.ts",
+    "test:singular": "jest test/unit/client.test.ts",
     "integration": "jest ./test/integration",
     "example": "npm run compile && node example.js",
     "lint": "gts lint",
