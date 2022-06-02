@@ -26,7 +26,7 @@ jest.mock('simple-oauth2', () => ({
   ClientCredentials: jest.fn(() => mockClientCredentials(validAccessToken)),
 }));
 
-import {AccessToken, ClientCredentials} from 'simple-oauth2';
+import {ClientCredentials} from 'simple-oauth2';
 
 const createMock = ClientCredentials as any;
 
