@@ -30,7 +30,7 @@ import {AccessToken, ClientCredentials} from 'simple-oauth2';
 
 const createMock = ClientCredentials as any;
 
-describe.only('AppJWT Authentication', () => {
+describe('AppJWT Authentication', () => {
   afterEach(jest.clearAllMocks);
   describe('Success flows', () => {
     const getCsdsEntry = async () => 'sentinel.liveperson.net';
