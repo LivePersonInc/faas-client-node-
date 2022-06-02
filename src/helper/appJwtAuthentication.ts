@@ -66,9 +66,11 @@ export class AppJwtAuthentication {
 
       const client = new ClientCredentials(options);
 
-      const {access_token}: Token = await client.getToken({
-        scope: [],
-      });
+      const {access_token}: Token = (
+        await client.getToken({
+          scope: [],
+        })
+      ).token;
 
       const jwt: unknown = jwtDecode(access_token);
 

@@ -19,20 +19,18 @@ jest.mock('simple-oauth2');
 const invalidAccessToken = 'not-a-valid-token';
 
 const mockClientCredentials = (accessToken: string) => ({
-  getToken: async () => ({
-    access_token: accessToken,
-  }),
+  getToken: async () => ({token: {access_token: accessToken}}),
 });
 
 jest.mock('simple-oauth2', () => ({
   ClientCredentials: jest.fn(() => mockClientCredentials(validAccessToken)),
 }));
 
-import {ClientCredentials} from 'simple-oauth2';
+import {AccessToken, ClientCredentials} from 'simple-oauth2';
 
 const createMock = ClientCredentials as any;
 
-describe('AppJWT Authentication', () => {
+describe.only('AppJWT Authentication', () => {
   afterEach(jest.clearAllMocks);
   describe('Success flows', () => {
     const getCsdsEntry = async () => 'sentinel.liveperson.net';
