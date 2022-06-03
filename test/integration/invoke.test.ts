@@ -85,7 +85,7 @@ describe('Invoke by UUID', () => {
   });
 
   it('should fail if lambda does not exist', async () => {
-    const nonExistingLambda = 'c521cadf-d444-4519-ad11-1c1111114415'
+    const nonExistingLambda = 'c521cadf-d444-4519-ad11-1c1111114415';
     const client = new Client({
       accountId,
       authStrategy: appJwtCredentials,
@@ -96,7 +96,7 @@ describe('Invoke by UUID', () => {
     };
 
     expect(
-       client.invoke({
+      client.invoke({
         lambdaUuid: nonExistingLambda,
         externalSystem: 'integration-tests',
         body: {
