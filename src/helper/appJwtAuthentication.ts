@@ -1,7 +1,7 @@
 import {
+  AccessToken,
   ClientCredentials,
   ModuleOptions as Oauth2Options,
-  Token,
 } from 'simple-oauth2';
 import {decode as jwtDecode} from 'jsonwebtoken';
 import {GetCsdsEntry} from '../types/tooling';
@@ -66,16 +66,14 @@ export class AppJwtAuthentication {
 
       const client = new ClientCredentials(options);
 
-      const {access_token}: Token = (
-        await client.getToken({
-          scope: [],
-        })
-      ).token;
+      const access_token: AccessToken = await client.getToken({
+        scope: [],
+      });
 
-      const jwt: unknown = jwtDecode(access_token);
+      const jwt: unknown = jwtDecode(access_token.token.access_token);
 
       if (jwt !== null) {
-        this.currentAccessToken = access_token;
+        this.currentAccessToken = access_token.token.access_token;
         this.currentJwt = jwt as {exp: number};
       } else if (this.isJwtExpired(this.currentJwt)) {
         throw new VError(

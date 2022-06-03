@@ -7,7 +7,7 @@ import {BaseConfig, Config} from '../../src/client/clientConfig';
 import {RequestError} from 'request-promise/errors';
 import {Options} from 'request';
 import {IncomingMessage} from 'http';
-
+import {AccessToken, Token} from 'simple-oauth2';
 const secret = 'mySecret';
 
 jest.mock('../../src/helper/csdsClient', () => {
@@ -33,22 +33,29 @@ jest.mock('request-promise', () => {
     };
   });
 });
+
+const token: Token = {
+  access_token: jwt.sign(
+    {
+      aud: 'le4711',
+      azp: 'bf16f923-b256-40c8-afa5-1b8e8372da09',
+      scope: 'faas.lambda.invoke',
+      iss: 'Sentinel',
+      exp: Date.now() / 1000 + 60 * 60,
+      iat: Date.now(),
+    },
+    secret
+  ),
+};
+
 jest.mock('simple-oauth2', () => ({
   ClientCredentials: jest.fn(() => ({
-    getToken: async () => ({
-      token: {
-        access_token: jwt.sign(
-          {
-            aud: 'le4711',
-            azp: 'bf16f923-b256-40c8-afa5-1b8e8372da09',
-            scope: 'faas.lambda.invoke',
-            iss: 'Sentinel',
-            exp: Date.now() / 1000 + 60 * 60,
-            iat: Date.now(),
-          },
-          secret
-        ),
-      },
+    getToken: async (): Promise<AccessToken> => ({
+      token,
+      expired: () => false,
+      refresh: async () => null as any,
+      revoke: async () => {},
+      revokeAll: async () => {},
     }),
   })),
 }));

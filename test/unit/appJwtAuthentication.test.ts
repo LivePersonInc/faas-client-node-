@@ -1,25 +1,33 @@
 import * as jwt from 'jsonwebtoken';
 import {AppJwtAuthentication} from '../../src/helper/appJwtAuthentication';
-const secret = 'mySecret';
-const validAccessToken = jwt.sign(
-  {
-    aud: 'le4711',
-    azp: 'bf16f923-b256-40c8-afa5-1b8e8372da09',
-    scope: 'faas.lambda.invoke',
-    iss: 'Sentinel',
-    exp: Date.now() / 1000 + 60 * 60,
-    iat: Date.now(),
-  },
-  secret
-);
+import {AccessToken, Token} from 'simple-oauth2';
 
-jest.genMockFromModule('simple-oauth2');
-jest.mock('simple-oauth2');
+const secret = 'mySecret';
+
+const validAccessToken: Token = {
+  access_token: jwt.sign(
+    {
+      aud: 'le4711',
+      azp: 'bf16f923-b256-40c8-afa5-1b8e8372da09',
+      scope: 'faas.lambda.invoke',
+      iss: 'Sentinel',
+      exp: Date.now() / 1000 + 60 * 60,
+      iat: Date.now(),
+    },
+    secret
+  ),
+};
 
 const invalidAccessToken = 'not-a-valid-token';
 
-const mockClientCredentials = (accessToken: string) => ({
-  getToken: async () => ({token: {access_token: accessToken}}),
+const mockClientCredentials = (token: any) => ({
+  getToken: async (): Promise<AccessToken> => ({
+    token,
+    expired: () => false,
+    refresh: async () => null as any,
+    revoke: async () => {},
+    revokeAll: async () => {},
+  }),
 });
 
 jest.mock('simple-oauth2', () => ({
@@ -78,7 +86,7 @@ describe('AppJWT Authentication', () => {
         getCsdsEntry,
       });
 
-      expect(auth.getHeader()).rejects.toMatchObject({
+      await expect(auth.getHeader()).rejects.toMatchObject({
         name: 'FaaSAppJWTAuthenticationError',
         message:
           'Error while creating authentication bearer via AppJWT (Client Credentials): Current AppJWT is expired and new Jwt could not be retrieved.',
