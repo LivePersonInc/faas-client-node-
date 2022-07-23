@@ -794,10 +794,10 @@
   resolved "https://registry.npmjs.org/@types/tough-cookie/-/tough-cookie-4.0.0.tgz"
   integrity sha512-I99sngh224D0M7XgW1s120zxCt3VYQ3IQsuw3P3jbq5GG4yc79+ZjyKznyOGIQrflfylLgcfekeZW/vk0yng6A==
 
-"@types/verror@1.10.5":
-  version "1.10.5"
-  resolved "https://registry.npmjs.org/@types/verror/-/verror-1.10.5.tgz"
-  integrity sha512-9UjMCHK5GPgQRoNbqdLIAvAy0EInuiqbW0PBMtVP6B5B2HQJlvoJHM+KodPZMEjOa5VkSc+5LH7xy+cUzQdmHw==
+"@types/verror@1.10.6":
+  version "1.10.6"
+  resolved "https://registry.npmjs.org/@types/verror/-/verror-1.10.6.tgz"
+  integrity sha512-NNm+gdePAX1VGvPcGZCDKQZKYSiAWigKhKaz5KF94hG6f2s8de9Ow5+7AbXoeKxL8gavZfk4UquSAygOF2duEQ==
 
 "@types/yargs-parser@*":
   version "21.0.0"
