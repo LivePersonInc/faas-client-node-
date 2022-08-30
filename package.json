@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@types/jest": "28.1.8",
-    "@types/jsonwebtoken": "8.5.8",
+    "@types/jsonwebtoken": "8.5.9",
     "@types/node": "16.11.56",
     "@types/request-promise": "4.1.48",
     "@types/simple-oauth2": "4.1.1",
