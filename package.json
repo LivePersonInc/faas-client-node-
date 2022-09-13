@@ -15,7 +15,7 @@
     "prepare": "npm run compile",
     "pretest": "npm run compile",
     "test": "jest --coverage ./test/unit",
-    "test:singular": "jest test/unit/client.test.ts",
+    "test:singular": "jest test/unit/csdsClient.test.ts",
     "integration": "jest ./test/integration",
     "example": "npm run compile && node example.js",
     "lint": "gts lint",
@@ -36,6 +36,7 @@
     "npm": ">=6.4.0"
   },
   "dependencies": {
+    "got": "11.8.2",
     "guid-typescript": "^1.0.9",
     "jsonwebtoken": "^8.5.1",
     "request": "^2.88.2",
@@ -55,6 +56,7 @@
     "expect-more-jest": "5.4.0",
     "gts": "3.1.0",
     "jest": "27.5.1",
+    "nock": "13.2.9",
     "oauth-1.0a": "2.2.6",
     "ts-jest": "27.1.4",
     "typescript": "4.6.4"

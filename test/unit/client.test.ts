@@ -1,38 +1,25 @@
 import * as jwt from 'jsonwebtoken';
-import request from 'request-promise';
 import {BaseClient} from '../../src/client/baseClient';
 import {Client} from '../../src/client/client';
 import {CsdsClient} from '../../src/helper/csdsClient';
 import {BaseConfig, Config} from '../../src/client/clientConfig';
-import {RequestError} from 'request-promise/errors';
-import {Options} from 'request';
-import {IncomingMessage} from 'http';
+import {Response} from '../../src/types/response';
+import nock from 'nock';
 
 const secret = 'mySecret';
+const TEST_HOST = 'test123.com';
+const ACCOUNT_ID = '123456';
 
 jest.mock('../../src/helper/csdsClient', () => {
   return {
     CsdsClient: jest.fn().mockImplementation(() => {
       return {
-        get: jest.fn(() => 'someDomain'),
+        get: jest.fn(() => TEST_HOST),
       };
     }),
   };
 });
-jest.mock('request-promise', () => {
-  return jest.fn(async url => {
-    return {
-      url: 'helloWorld',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: {resp: 'body'},
-      ok: true,
-      status: 200,
-      statusText: 'OK',
-    };
-  });
-});
+
 jest.mock('simple-oauth2', () => ({
   ClientCredentials: jest.fn(() => ({
     getToken: async () => ({
@@ -53,8 +40,6 @@ jest.mock('simple-oauth2', () => ({
   })),
 }));
 
-const requestMock: jest.Mock<any> = request as any;
-
 const testConfig: Required<BaseConfig> = {
   accountId: '123456',
   authStrategy: {
@@ -64,6 +49,10 @@ const testConfig: Required<BaseConfig> = {
 };
 
 describe('Client', () => {
+  beforeEach(() => {
+    nock.cleanAll();
+    nock.enableNetConnect();
+  });
   afterEach(jest.clearAllMocks);
   describe('success flows', () => {
     test('class and constructor - Base', () => {
@@ -74,119 +63,148 @@ describe('Client', () => {
     });
 
     test('invoke method', async () => {
-      const client1 = new Client(testConfig);
+      const result1 = [123];
+      const result2 = [456];
+      const scope = nock('https://test123.com')
+        .post(
+          '/api/account/123456/events/fooBar/invoke?v=1&skillId=&externalSystem=testSystem'
+        )
+        .once()
+        .reply(200, result1)
+        .persist()
+        .post(
+          '/api/account/le12345/events/fooBar/invoke?v=1&skillId=&externalSystem=testSystem'
+        )
+        .once()
+        .reply(200, result2)
+        .persist();
 
-      await expect(
-        client1.invoke({
-          eventId: 'fooBar',
-          externalSystem: 'testSystem',
-          body: {
-            payload: {},
-          },
-        })
-      ).resolves.toBeNonEmptyObject();
+      const client1 = new Client(testConfig);
+      const response1 = client1.invoke({
+        eventId: 'fooBar',
+        externalSystem: 'testSystem',
+        body: {
+          payload: {},
+        },
+      });
+
+      await expect(response1).resolves.toBeNonEmptyObject();
+      expect((await response1).body).toEqual(result1);
 
       const client2 = new Client({...testConfig, accountId: 'le12345'});
-      await expect(
-        client2.invoke({
-          eventId: 'fooBar',
-          externalSystem: 'testSystem',
-          body: {
-            payload: {},
-          },
-        })
-      ).resolves.toBeNonEmptyObject();
-      expect(request).toHaveBeenCalledTimes(2);
+      const response2 = client2.invoke({
+        eventId: 'fooBar',
+        externalSystem: 'testSystem',
+        body: {
+          payload: {},
+        },
+      });
+
+      await expect(response2).resolves.toBeNonEmptyObject();
+      expect((await response2).body).toEqual(result2);
+
+      expect(scope.isDone()).toBe(true);
     });
 
     test('getLambdas method', async () => {
-      const client = new Client({...testConfig, accountId: 'fr12345'});
-      await expect(
-        client.getLambdas({
-          accountId: '123456',
-          externalSystem: 'testSystem',
-        })
-      ).resolves.toBeNonEmptyObject();
+      const lambda = [{uuid: 'a-b-c-d'}];
+      const scope = nock('https://test123.com')
+        .get(
+          '/api/account/123456/lambdas/?eventId=&state=&externalSystem=testSystem&userId=&v=1'
+        )
+        .once()
+        .reply(200, lambda)
+        .persist();
 
-      expect(request).toHaveBeenCalledTimes(1);
+      const client = new Client({...testConfig, accountId: ACCOUNT_ID});
+      const response = client.getLambdas({
+        externalSystem: 'testSystem',
+      });
+      await expect(response).resolves.toBeNonEmptyObject();
+      expect((await response).body).toEqual(lambda);
+
+      expect(scope.isDone()).toBe(true);
     });
 
     test('should retry on receiving a network error', async () => {
-      requestMock.mockClear(); //  To ensure only current calls are included
-      requestMock.mockRejectedValueOnce(
-        new RequestError(
-          {code: 'ECONNRESET'},
-          {} as Options,
-          {} as IncomingMessage
+      const errorCode = {code: 'ECONNRESET'};
+
+      const scope = nock('https://test123.com')
+        .post(
+          '/api/account/123456/lambdas/this-is-a-uuid/invoke?v=1&skillId=&externalSystem=test-system'
         )
-      );
+        .times(3)
+        .replyWithError(errorCode);
+
       const client = new Client(testConfig);
 
-      await expect(
-        client.invoke({
-          lambdaUuid: '4714',
-          externalSystem: 'test-system',
-          body: {
-            payload: {},
-          },
-        })
-      ).resolves.toBeNonEmptyObject();
-      expect(requestMock).toHaveBeenCalledTimes(2);
+      const response: Response = await client.invoke({
+        lambdaUuid: 'this-is-a-uuid',
+        externalSystem: 'test-system',
+        body: {
+          payload: {},
+        },
+      });
+
+      expect(response.retryCount).toEqual(3);
+      expect(scope.isDone()).toBe(true);
     });
   });
 
   describe('Unhappy flows', () => {
-    test('should throw if Functions returns a none-okay status code', () => {
-      requestMock.mockRejectedValueOnce({
-        response: {
-          headers: [],
-          body: {},
-          statusCode: 502,
-          statusMessage: 'Whoops',
-        },
-      });
-      const config: Config = {...testConfig, failOnErrorStatusCode: true};
-      const client = new Client(config);
-
-      expect(
-        client.invoke({
-          lambdaUuid: '4711',
-          externalSystem: 'test-system',
-          body: {
-            payload: {},
-          },
-        })
-      ).rejects.toMatchObject({
-        name: 'FaaSInvokeError',
-        message: expect.stringContaining('502 - Whoops'),
-      });
-    });
-
-    test('should throw if network errors are raised continuously', async () => {
-      requestMock.mockClear(); //  To ensure only current calls are included
-      requestMock.mockRejectedValue(
-        new RequestError(
-          {code: 'ECONNRESET'},
-          {} as Options,
-          {} as IncomingMessage
+    test('should throw if Functions returns a none-okay status code', async () => {
+      const scope = nock('https://test123.com')
+        .post(
+          '/api/account/123456/lambdas/this-is-a-uuid/invoke?v=1&skillId=&externalSystem=test-system'
         )
-      );
+        .times(3)
+        .reply(502)
+        .persist();
       const config: Config = {...testConfig, failOnErrorStatusCode: true};
       const client = new Client(config);
 
-      await expect(
-        client.invoke({
-          lambdaUuid: '4714',
+      try {
+        await client.invoke({
+          lambdaUuid: 'this-is-a-uuid',
           externalSystem: 'test-system',
           body: {
             payload: {},
           },
-        })
-      ).rejects.toMatchObject({
-        name: 'FaaSInvokeError',
-      });
+        });
+      } catch (error) {
+        expect(error).toMatchObject({
+          name: 'FaaSInvokeError',
+          message: expect.stringContaining('502 - Bad Gateway'),
+        });
+        expect(scope.isDone()).toBe(true);
+      }
+    });
+    test('should throw if network errors are raised continuously', async () => {
+      const errorCode = {code: 'ECONNRESET'};
 
-      expect(requestMock).toHaveBeenCalledTimes(3);
+      const scope = nock('https://test123.com')
+        .post(
+          '/api/account/123456/lambdas/this-is-a-uuid/invoke?v=1&skillId=&externalSystem=test-system'
+        )
+        .times(3)
+        .replyWithError(errorCode);
+      const config: Config = {...testConfig, failOnErrorStatusCode: true};
+      const client = new Client(config);
+
+      try {
+        await client.invoke({
+          lambdaUuid: 'this-is-a-uuid',
+          externalSystem: 'test-system',
+          body: {
+            payload: {},
+          },
+        });
+      } catch (error) {
+        expect(error).toMatchObject({
+          name: 'FaaSInvokeError',
+        });
+        expect(scope.isDone()).toBe(true);
+      }
     });
   });
 });

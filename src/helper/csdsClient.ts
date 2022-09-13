@@ -1,9 +1,13 @@
-import request from 'request-promise';
+import got from 'got';
 import VError = require('verror');
 
 interface ServiceDomainTuple {
   service: string;
   baseURI: string;
+}
+
+interface CSDSResponse {
+  baseURIs: ServiceDomainTuple[];
 }
 
 interface ServiceDomainCache {
@@ -13,8 +17,7 @@ interface ServiceDomainCache {
 
 export class CsdsClient {
   private domainCache: Map<string, ServiceDomainCache>;
-
-  /**
+  /**G
    * @param ttlInSeconds TTL of the domains cache in seconds
    */
   constructor(private ttlInSeconds = 600) {
@@ -23,7 +26,6 @@ export class CsdsClient {
 
   async get(accountId: string, service: string): Promise<string> {
     const domains = await this.getCachedDomains(accountId);
-
     const domain = domains.find(({service: s}) => s === service);
 
     if (domain) {
@@ -47,19 +49,19 @@ export class CsdsClient {
     }
 
     try {
-      const {baseURIs} = await request(this.getUrl(accountId), {
-        json: true,
+      const url = this.getUrl(accountId);
+      const {body} = await got<CSDSResponse>(url, {
+        responseType: 'json',
+        throwHttpErrors: true,
       });
-
+      const {baseURIs} = body;
       if (baseURIs && baseURIs.length !== 0) {
         this.domainCache.set(accountId, {
           lastCacheTimestamp: Date.now(),
           domains: baseURIs,
         });
-
-        return baseURIs as ServiceDomainTuple[];
+        return baseURIs;
       }
-
       return [];
     } catch (error) {
       throw new VError(

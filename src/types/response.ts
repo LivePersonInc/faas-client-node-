@@ -7,4 +7,5 @@ export interface Response {
   ok: boolean;
   status: number;
   statusText: string;
+  retryCount?: number;
 }

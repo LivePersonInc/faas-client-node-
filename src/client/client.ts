@@ -1,15 +1,13 @@
 import {IsImplementedCache} from './../helper/isImplementedCache';
-import request from 'request-promise';
 import {Guid} from 'guid-typescript';
 import {BaseClient} from './baseClient';
 import {Config, defaultConfig} from './clientConfig';
 import {Tooling, Fetch, GetCsdsEntry} from '../types/tooling';
 import {CsdsClient} from '../helper/csdsClient';
-import {RequestError} from 'request-promise/errors';
 import {RETRIABLE_ERRORS} from '../helper/networkErrors';
-import {sleep} from '../helper/common';
 import {Response} from '../types/response';
-import {FetchOptions} from '../types/fetchOptions';
+import {RequestError, RetryObject} from 'got';
+import got from 'got';
 
 const getTooling = (
   config: Required<Config>,
@@ -27,22 +25,30 @@ const getTooling = (
 
   const metricCollector = customTooling.metricCollector;
 
-  const isRetriableNetworkError = ({cause}: RequestError): boolean =>
-    RETRIABLE_ERRORS.includes(cause?.code);
-
-  const defaultFetch: Fetch = async (
-    {url, body, headers, method},
-    attempt = 1
-  ) => {
+  const defaultFetch: Fetch = async ({url, body, headers, method}) => {
     try {
-      const resp = await request(url, {
-        body,
-        headers,
+      const resp = await got(url, {
+        ...(method === 'post' && {body: Buffer.from(JSON.stringify(body))}),
         method,
-        json: true,
-        simple: true,
-        resolveWithFullResponse: true,
-        timeout: config.timeout,
+        headers,
+        resolveBodyOnly: false,
+        responseType: 'json',
+        throwHttpErrors: true,
+        timeout: {
+          request: config.timeout,
+        },
+        retry: {
+          limit: 3,
+          methods: ['GET', 'POST'],
+          errorCodes: RETRIABLE_ERRORS,
+          calculateDelay: ({computedValue, attemptCount}: RetryObject) => {
+            if (computedValue) {
+              return attemptCount * 350;
+            }
+
+            return 0;
+          },
+        },
       });
 
       return {
@@ -52,25 +58,17 @@ const getTooling = (
         ok: true,
         status: resp.statusCode,
         statusText: resp.statusMessage,
-      };
+      } as Response;
     } catch (error) {
-      if (error instanceof RequestError) {
-        if (!isRetriableNetworkError(error) || attempt === 3) {
-          throw error;
-        }
-
-        await sleep(attempt * 350); // 350 is the default value
-        return defaultFetch({url, body, headers, method}, attempt + 1);
-      }
-
-      const {response: resp} = error as RequestError;
+      const {response: resp, request: req} = error as RequestError;
       return {
         url,
-        headers: resp.headers,
-        body: (resp as FetchOptions).body,
+        headers: resp?.headers,
+        body: resp?.body,
         ok: false,
-        status: resp.statusCode,
-        statusText: resp.statusMessage,
+        status: resp?.statusCode,
+        statusText: resp?.statusMessage,
+        retryCount: req?.retryCount,
       } as Response;
     }
   };
