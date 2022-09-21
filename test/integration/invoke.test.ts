@@ -96,7 +96,7 @@ describe('Invoke by UUID', () => {
 
     expect(
       client.invoke({
-        lambdaUuid: 'does-not-exist',
+        lambdaUuid: 'e68edcda-29e1-45b0-904f-e6f8182f1592',
         externalSystem: 'integration-tests',
         body: {
           headers: [],
@@ -105,7 +105,7 @@ describe('Invoke by UUID', () => {
       })
     ).rejects.toMatchObject({
       message: expect.stringContaining(
-        `There is no does-not-exist deployed on ${accountId}`
+        `There is no e68edcda-29e1-45b0-904f-e6f8182f1592 deployed on ${accountId}`
       ),
       name: 'FaaSInvokeError',
     });
