@@ -42,11 +42,7 @@ const getTooling = (
           methods: ['GET', 'POST'],
           errorCodes: RETRIABLE_ERRORS,
           calculateDelay: ({computedValue, attemptCount}: RetryObject) => {
-            if (computedValue) {
-              return attemptCount * 350;
-            }
-
-            return 0;
+            return computedValue ? attemptCount * 350 : 0;
           },
         },
       });
