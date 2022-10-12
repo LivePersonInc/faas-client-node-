@@ -50,11 +50,12 @@ export class CsdsClient {
 
     try {
       const url = this.getUrl(accountId);
-      const {body} = await got<CSDSResponse>(url, {
+      const {baseURIs} = await got<CSDSResponse>(url, {
         responseType: 'json',
         throwHttpErrors: true,
+        resolveBodyOnly: true,
       });
-      const {baseURIs} = body;
+
       if (baseURIs && baseURIs.length !== 0) {
         this.domainCache.set(accountId, {
           lastCacheTimestamp: Date.now(),
