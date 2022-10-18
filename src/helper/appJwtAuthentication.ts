@@ -1,7 +1,7 @@
 import {
+  AccessToken,
   ClientCredentials,
   ModuleOptions as Oauth2Options,
-  AccessToken,
 } from 'simple-oauth2';
 import {decode as jwtDecode} from 'jsonwebtoken';
 import {GetCsdsEntry} from '../types/tooling';
