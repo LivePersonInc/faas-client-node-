@@ -28,5 +28,6 @@ jobs:
         OAUTH_API_SECRET: ${{ secrets.OAUTH_API_SECRET }}
         OAUTH_TOKEN_KEY: ${{ secrets.OAUTH_TOKEN_KEY }}
         OAUTH_TOKEN_SECRET: ${{ secrets.OAUTH_TOKEN_SECRET }}
+        OAUTH_SIGNATURE_METHOD: ${{ secrets.OAUTH_SIGNATURE_METHOD }}
 
 
