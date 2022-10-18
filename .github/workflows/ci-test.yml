@@ -5,7 +5,7 @@ name: Node.js CI
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ "master" ]
 
 jobs:
   build:
@@ -14,8 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        # run on all supported LTS versions and the latest/current version
-        node-version: [14, 16, 18, latest]
+        node-version: [16.x]
 
     steps:
     - uses: actions/checkout@v3
@@ -23,6 +22,13 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'yarn'
-    - run: yarn
-    - run: yarn test
+        cache: 'npm'
+      env: # Or as an environment variable
+        ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
+        SUCCESS_LAMBDA_UUID: ${{ secrets.LAMBDA_UUID }}
+        CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+    - run: npm ci
+    - run: npm run compile --if-present
+    - run: npm run integration
+

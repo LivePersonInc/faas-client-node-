@@ -85,6 +85,7 @@ describe('Invoke by UUID', () => {
   });
 
   it('should fail if lambda does not exist', async () => {
+    const nonExistingLambda = 'e68edcda-29e1-45b0-904f-e6f8182f1592';
     const client = new Client({
       accountId,
       authStrategy: appJwtCredentials,
@@ -105,7 +106,7 @@ describe('Invoke by UUID', () => {
       })
     ).rejects.toMatchObject({
       message: expect.stringContaining(
-        `There is no e68edcda-29e1-45b0-904f-e6f8182f1592 deployed on ${accountId}`
+        `There is no ${nonExistingLambda} deployed on ${accountId}`
       ),
       name: 'FaaSInvokeError',
     });
