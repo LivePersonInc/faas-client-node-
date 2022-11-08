@@ -1,0 +1,33 @@
+
+name: Integration Tests
+
+on:
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  integration-test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16.x'
+        cache: 'npm'
+    - run: npm install
+    - run: npm run integration
+      env:
+        ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
+        SUCCESS_LAMBDA_UUID: ${{ secrets.LAMBDA_UUID }}
+        CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+        OAUTH_API_KEY: ${{ secrets.OAUTH_API_KEY }}
+        OAUTH_API_SECRET: ${{ secrets.OAUTH_API_SECRET }}
+        OAUTH_TOKEN_KEY: ${{ secrets.OAUTH_TOKEN_KEY }}
+        OAUTH_TOKEN_SECRET: ${{ secrets.OAUTH_TOKEN_SECRET }}
+        OAUTH_SIGNATURE_METHOD: ${{ secrets.OAUTH_SIGNATURE_METHOD }}
+
+

@@ -11,8 +11,11 @@ const clientId = process.env['CLIENT_ID'] || 'does-not-exist';
 const clientSecret = process.env['CLIENT_SECRET'] || 'does-not-exist';
 const oauthApiKey = process.env['OAUTH_API_KEY'] || 'does-not-exist';
 const oauthApiSecret = process.env['OAUTH_API_SECRET'] || 'does-not-exist';
+const oauthTokenKey = process.env['OAUTH_TOKEN_KEY'] || 'does-not-exist';
+const oauthTokenSecret = process.env['OAUTH_TOKEN_SECRET'] || 'does-not-exist';
 const oauthSignatureMethod =
   process.env['OAUTH_SIGNATURE_METHOD'] || 'does-not-exist';
+
 const appJwtCredentials: AppJwtCredentials = {
   clientId,
   clientSecret,
@@ -59,7 +62,12 @@ describe('Invoke by UUID', () => {
             .digest('base64');
         },
       });
-      return oAuth.toHeader(oAuth.authorize({url, method})).Authorization;
+      return oAuth.toHeader(
+        oAuth.authorize(
+          {url, method},
+          {key: oauthTokenKey, secret: oauthTokenSecret}
+        )
+      ).Authorization;
     };
     // custom auth implementation end
 
@@ -78,6 +86,7 @@ describe('Invoke by UUID', () => {
       body: {
         headers: [],
         payload,
+        timestamp: Date.now(),
       },
     });
 

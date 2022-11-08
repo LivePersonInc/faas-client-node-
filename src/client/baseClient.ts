@@ -17,7 +17,6 @@ import {ImplementedEvent} from '../helper/isImplementedCache';
 import {DoFetchOptions} from '../types/fetchOptions';
 import {AppJwtAuthentication} from '../helper/appJwtAuthentication';
 import {AppJwtCredentials} from '../types/appJwtCredentials';
-import {RequestError} from 'request-promise/errors';
 const stopwatch = require('statman-stopwatch');
 
 const name = 'faas-client-js';
@@ -75,9 +74,11 @@ export class BaseClient {
       this.tooling.metricCollector?.onInvoke(successMetric);
       return response;
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const statusCode = ((error as VError)?.cause as any)?.jse_cause?.jse_info
+        ?.response;
       const failureMetric = this.enhanceBaseMetrics(baseMetrics, {
-        statusCode: (error as RequestError).cause?.jse_cause?.jse_info?.response
-          ?.status,
+        statusCode,
         error,
       });
       this.tooling.metricCollector?.onInvoke(failureMetric);
@@ -112,12 +113,15 @@ export class BaseClient {
       this.tooling.metricCollector?.onGetLambdas(successMetric);
       return resp;
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const statusCode = ((error as VError)?.cause as any)?.jse_cause?.jse_info
+        ?.response;
       const failureMetric = this.enhanceBaseMetrics(baseMetrics, {
         requestDurationInMillis: watch.read(),
-        statusCode: (error as RequestError).cause?.jse_cause?.jse_info?.response
-          ?.status,
+        statusCode,
         error,
       });
+
       this.tooling.metricCollector?.onGetLambdas(failureMetric);
       throw error;
     } finally {
@@ -135,12 +139,11 @@ export class BaseClient {
     baseMetrics.event = isImplementedRequestData.eventId;
     const watch = new stopwatch();
     watch.start();
-    const cachedEvent:
-      | ImplementedEvent
-      | undefined = this.tooling.isImplementedCache.get(
-      isImplementedRequestData.eventId,
-      isImplementedRequestData.skillId
-    );
+    const cachedEvent: ImplementedEvent | undefined =
+      this.tooling.isImplementedCache.get(
+        isImplementedRequestData.eventId,
+        isImplementedRequestData.skillId
+      );
     if (cachedEvent !== undefined) {
       const successFromCacheMetric = this.enhanceBaseMetrics(baseMetrics, {
         fromCache: true,
@@ -169,10 +172,12 @@ export class BaseClient {
         );
         return implemented;
       } catch (error) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const statusCode = ((error as VError)?.cause as any)?.jse_cause
+          ?.jse_info?.response;
         const failureMetric = this.enhanceBaseMetrics(baseMetrics, {
           requestDurationInMillis: watch.read(),
-          statusCode: (error as RequestError).cause?.jse_cause?.jse_info
-            ?.response?.status,
+          statusCode,
           error,
         });
         this.tooling.metricCollector?.onIsImplemented(failureMetric);
@@ -220,7 +225,7 @@ export class BaseClient {
           info: {
             ...this.getDebugConfig(),
           },
-          name: this.isCustomLambdaError((error as RequestError).cause())
+          name: this.isCustomLambdaError((error as VError).cause())
             ? 'FaaSLambdaError'
             : 'FaaSInvokeError',
         },
@@ -246,6 +251,7 @@ export class BaseClient {
     const query: GetLambdasQuery = {
       eventId: requestData.eventId,
       state: requestData.state,
+      externalSystem: data.externalSystem,
       userId: data.userId,
       v: requestData.apiVersion,
     };
@@ -345,6 +351,7 @@ export class BaseClient {
         },
         method,
       };
+
       const response = await this.tooling.fetch(requestOptions);
       if (response.ok === false && options.failOnErrorStatusCode === true) {
         // the error will be intentionally caught in the catch statement

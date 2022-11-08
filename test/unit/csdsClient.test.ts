@@ -1,9 +1,6 @@
-import request from 'request-promise';
 import {CsdsClient} from '../../src/helper/csdsClient';
-import {promisify} from 'util';
-const setTimeoutPromise = promisify(setTimeout);
-
-jest.mock('request-promise');
+import nock from 'nock';
+import {sleep} from '../../src/helper/common';
 
 const csdsApiResultQA = {
   baseURIs: [
@@ -35,77 +32,115 @@ const csdsApiResultProd = {
   ],
 };
 
-const requestMock: jest.Mock<any> = request as any;
-
 describe('CsdsClient', () => {
+  beforeEach(() => {
+    nock.cleanAll();
+  });
   afterEach(jest.clearAllMocks);
   describe('Success flows', () => {
     it('should get csds entry if it exists', async () => {
-      requestMock.mockResolvedValueOnce(csdsApiResultQA);
+      const scope = nock('http://hc1n.dev.lprnd.net')
+        .get('/api/account/le4711/service/baseURI.json?version=1.0')
+        .once()
+        .reply(200, csdsApiResultQA)
+        .persist();
 
       const csdsClient = new CsdsClient();
 
       const uri = await csdsClient.get('le4711', 'foo');
 
       expect(uri).toEqual('foo.liveperson.net');
+      expect(scope.isDone()).toBe(true);
     });
 
     it('should cache requests', async () => {
-      requestMock.mockResolvedValue(csdsApiResultQA);
+      const scope = nock('http://hc1n.dev.lprnd.net')
+        .get('/api/account/le4711/service/baseURI.json?version=1.0')
+        .once()
+        .reply(200, csdsApiResultQA);
 
       const csdsClient = new CsdsClient();
 
       await csdsClient.get('le4711', 'foo');
       await csdsClient.get('le4711', 'bar');
 
-      expect(requestMock).toBeCalledTimes(1);
+      expect(scope.isDone()).toBe(true);
     });
 
     it('should do request if cache expired', async () => {
-      requestMock.mockResolvedValue(csdsApiResultProd);
+      const scope = nock('http://adminlogin.liveperson.net')
+        .get('/api/account/4711/service/baseURI.json?version=1.0')
+        .twice()
+        .reply(200, csdsApiResultProd);
 
       const csdsClient = new CsdsClient(1);
 
       await csdsClient.get('4711', 'foo');
-      await setTimeoutPromise(2000);
+      await sleep(1200);
       await csdsClient.get('4711', 'bar');
 
-      expect(requestMock).toBeCalledTimes(2);
+      expect(scope.isDone()).toBe(true);
     });
   });
 
   describe('Unhappy flows', () => {
     it('should throw if domain can not be found', async () => {
-      requestMock.mockResolvedValueOnce(csdsApiResultQA);
+      const scope = nock('http://hc1n.dev.lprnd.net')
+        .get('/api/account/le4711/service/baseURI.json?version=1.0')
+        .once()
+        .reply(200, csdsApiResultQA);
 
       const csdsClient = new CsdsClient();
 
-      expect(csdsClient.get('fr4711', 'does-not-exist')).rejects.toMatchObject({
-        message: 'Service "does-not-exist" could not be found',
-        name: 'CSDSDomainNotFound',
-      });
+      try {
+        await csdsClient.get('le4711', 'does-not-exist');
+      } catch (error) {
+        expect(error).toMatchObject({
+          message: 'Service "does-not-exist" could not be found',
+          name: 'CSDSDomainNotFound',
+        });
+        expect(scope.isDone()).toBe(true);
+      }
     });
 
     it('should throw if result is unexpected', async () => {
-      requestMock.mockRejectedValueOnce(new Error('Whoops'));
+      const errorCode = {code: 'ECONNRESET'};
+
+      const scope = nock('http://hc1n.dev.lprnd.net')
+        .get('/api/account/le4711/service/baseURI.json?version=1.0')
+        .thrice()
+        .replyWithError(errorCode);
 
       const csdsClient = new CsdsClient();
 
-      expect(csdsClient.get('le4711', 'foo')).rejects.toMatchObject({
-        message: 'Error while fetching CSDS entries: Whoops',
-        name: 'CSDSFailure',
-      });
+      try {
+        await csdsClient.get('le4711', 'foo');
+      } catch (error) {
+        expect(error).toMatchObject({
+          message: 'Error while fetching CSDS entries: ',
+          name: 'CSDSFailure',
+        });
+        expect(scope.isDone()).toBe(true);
+      }
     });
 
     it('should throw if response is empty', async () => {
-      requestMock.mockReturnValueOnce([]);
+      const scope = nock('http://hc1n.dev.lprnd.net')
+        .get('/api/account/le4711/service/baseURI.json?version=1.0')
+        .once()
+        .reply(200, []);
 
       const csdsClient = new CsdsClient();
 
-      expect(csdsClient.get('le4711', 'foo')).rejects.toMatchObject({
-        message: expect.stringContaining('Service "foo" could not be found'),
-        name: 'CSDSDomainNotFound',
-      });
+      try {
+        await csdsClient.get('le4711', 'foo');
+      } catch (error) {
+        expect(error).toMatchObject({
+          message: expect.stringContaining('Service "foo" could not be found'),
+          name: 'CSDSDomainNotFound',
+        });
+        expect(scope.isDone()).toBe(true);
+      }
     });
   });
 });
