@@ -78,7 +78,7 @@ export class BaseClient {
       const statusCode = ((error as VError)?.cause as any)?.jse_cause?.jse_info
         ?.response;
       const failureMetric = this.enhanceBaseMetrics(baseMetrics, {
-        statusCode: statusCode,
+        statusCode,
         error,
       });
       this.tooling.metricCollector?.onInvoke(failureMetric);
