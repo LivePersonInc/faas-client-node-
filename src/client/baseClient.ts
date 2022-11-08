@@ -177,7 +177,7 @@ export class BaseClient {
           ?.jse_info?.response;
         const failureMetric = this.enhanceBaseMetrics(baseMetrics, {
           requestDurationInMillis: watch.read(),
-          statusCode: statusCode,
+          statusCode,
           error,
         });
         this.tooling.metricCollector?.onIsImplemented(failureMetric);
