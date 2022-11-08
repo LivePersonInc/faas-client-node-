@@ -6,7 +6,7 @@ import {Tooling, Fetch, GetCsdsEntry} from '../types/tooling';
 import {CsdsClient} from '../helper/csdsClient';
 import {RETRIABLE_ERRORS} from '../helper/networkErrors';
 import {Response} from '../types/response';
-import {RequestError, RetryObject} from 'got';
+import type {RequestError, RetryObject} from 'got';
 import got from 'got';
 
 const getTooling = (
