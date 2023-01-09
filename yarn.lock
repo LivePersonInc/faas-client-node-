@@ -1634,19 +1634,19 @@ exit@^0.1.2:
   resolved "https://registry.npmjs.org/exit/-/exit-0.1.2.tgz"
   integrity sha512-Zk/eNKV2zbjpKzrsQ+n1G6poVbErQxJ0LBOJXaKZ1EViLzH+hrLu9cdXI4zw9dBQJslwBEpbQ2P1oS7nDxs6jQ==
 
-expect-more-jest@5.4.1:
-  version "5.4.1"
-  resolved "https://registry.npmjs.org/expect-more-jest/-/expect-more-jest-5.4.1.tgz"
-  integrity sha512-+9FiotIgWnZOaZj8e8maR7LESNST88P9lgakL4xFSXPwhKLQz2koSqoSGyXJDdbu85xO6mV/Cnm8pNYjqtN9rg==
+expect-more-jest@5.4.2:
+  version "5.4.2"
+  resolved "https://registry.npmjs.org/expect-more-jest/-/expect-more-jest-5.4.2.tgz"
+  integrity sha512-+jjGGSpAlt0U/zT0V6Fj+a0UUGKQSka+PmPmCZSx/nGmCLH0nW79Zf6467kGiZr/FH8IchK5JzllUEcmFGMH6Q==
   dependencies:
     "@jest/expect-utils" "28.1.0"
-    expect-more "1.2.0"
+    expect-more "1.2.1"
     jest-matcher-utils "28.1.0"
 
-expect-more@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.npmjs.org/expect-more/-/expect-more-1.2.0.tgz"
-  integrity sha512-AVnjc5oh2jgiJjOrjbiKxbwLlNA/zsl2044Nbd09H4+2KwThtSLYKhdOusLYOrcToFAa2uBOWR1ExCN4kOWgbQ==
+expect-more@1.2.1:
+  version "1.2.1"
+  resolved "https://registry.npmjs.org/expect-more/-/expect-more-1.2.1.tgz"
+  integrity sha512-rkt/y2x4e6sNDvFUqv5pdVOcOg4NWb/prSzCBth1KAD2oxXkSyeisCJ9+RHfigTLkuHRoxHUF6DEQ2/o9hEG4A==
 
 expect@^29.0.0, expect@^29.3.1:
   version "29.3.1"
