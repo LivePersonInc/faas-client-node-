@@ -36,7 +36,7 @@
     "npm": ">=6.4.0"
   },
   "dependencies": {
-    "got": "11.8.6",
+    "got": "12.5.3",
     "guid-typescript": "^1.0.9",
     "jsonwebtoken": "^9.0.0",
     "simple-oauth2": "^5.0.0",
