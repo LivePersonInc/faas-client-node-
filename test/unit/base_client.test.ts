@@ -282,7 +282,7 @@ describe('Base Client', () => {
       );
     });
 
-    test('invoke method with Oauth2 + DPoP auth by event ID', async () => {
+    test('invoke method with Oauth2+DPoP auth strategy by event ID', async () => {
       expect.hasAssertions();
       await invokeWithDpopAuth({
         eventId: EVENT.MessagingNewConversation,
@@ -291,7 +291,7 @@ describe('Base Client', () => {
       });
     });
 
-    test('invoke method with Oauth2 + DPoP auth by lambdaUUID', async () => {
+    test('invoke method with Oauth2+DPoP auth strategy by lambdaUUID', async () => {
       expect.hasAssertions();
       await invoke({
         lambdaUuid: '12345678',
@@ -464,12 +464,6 @@ describe('Base Client', () => {
         })
       );
     });
-
-    test('isImplemented with Oauth2+DPoP auth strategy', async () => {
-
-      // TODO:
-    });
-
     test('isImplemented with skillId', async () => {
       expect.hasAssertions();
       const client = new BaseClient(testConfig, testTooling);
@@ -517,6 +511,51 @@ describe('Base Client', () => {
       );
     });
 
+    test('isImplemented with Oauth2+DPoP auth strategy', async () => {
+      expect.hasAssertions();
+      const client = new BaseClient(testConfigWithDpopAuth, testTooling);
+      const hasBeenImplemented = await client.isImplemented({
+        eventId: EVENT.MessagingTTR,
+        externalSystem: 'test',
+      });
+      expect(testTooling.metricCollector.onIsImplemented).toHaveBeenCalledTimes(
+        1
+      );
+      expect(testTooling.metricCollector.onIsImplemented).toHaveBeenCalledWith(
+        expect.objectContaining({
+          accountId: testConfig.accountId,
+          event: EVENT.MessagingTTR,
+          externalSystem: 'test',
+          domain: 'test-domain.com',
+          fromCache: false,
+        })
+      );
+      expect(hasBeenImplemented).toBeTrue();
+      expect(testTooling.generateId).toHaveBeenCalledTimes(1);
+      expect(testTooling.getCsdsEntry).toHaveBeenCalledTimes(1);
+      expect(testTooling.fetch).toHaveBeenCalledTimes(1);
+      const hasBeenImplementedAgain = await client.isImplemented({
+        eventId: EVENT.MessagingNewConversation,
+        externalSystem: 'test',
+      });
+      // should still only have been called once as second call result was cached
+      expect(testTooling.fetch).toHaveBeenCalledTimes(1);
+      expect(hasBeenImplementedAgain).toBeTrue();
+      expect(testTooling.fetch).toHaveBeenCalledWith(
+        expect.objectContaining({
+          url: expect.toBeNonEmptyString(),
+          headers: expect.objectContaining({
+            Authorization: expect.toStartWith('DPoP'),
+            DPoP: expect.toBeNonEmptyString(),
+            'Content-Type': expect.toBeNonEmptyString(),
+            'User-Agent': expect.toBeNonEmptyString(),
+            'X-Request-ID': expect.toBeNonEmptyString(),
+          }),
+          method: HTTP_METHOD.GET,
+        })
+      );
+    });
+
     test('getLambdas with filtering', async () => {
       expect.hasAssertions();
       await getLambdas({
@@ -534,17 +573,18 @@ describe('Base Client', () => {
         externalSystem: 'test',
       });
     });
-  });
 
-  test('getLambdas with Oauth2 + DPoP auth', async () => {
-    expect.hasAssertions();
-    await getLambdasWithDpopAuth({
-      accountId: '123456',
-      eventId: EVENT.MessagingNewConversation,
-      externalSystem: 'test',
-      state: ['Productive'],
+    test('getLambdas with Oauth2+DPoP auth strategy', async () => {
+      expect.hasAssertions();
+      await getLambdasWithDpopAuth({
+        accountId: '123456',
+        eventId: EVENT.MessagingNewConversation,
+        externalSystem: 'test',
+        state: ['Productive'],
+      });
     });
   });
+
   describe('failure flows', () => {
     test('invoke method with eventId with failed csds lookup', async () => {
       expect.hasAssertions();
