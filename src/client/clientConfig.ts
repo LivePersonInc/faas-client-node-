@@ -10,7 +10,10 @@ export interface BaseConfig {
    */
   readonly accountId: string;
 
-  readonly authStrategy: AppJwtCredentials | GetAuthorizationHeader;
+  readonly authStrategy:
+    | AppJwtCredentials
+    | GetAuthorizationHeader
+    | DpopCredentials;
 }
 
 export interface DefaultConfig {
@@ -53,6 +56,31 @@ export type GetAuthorizationHeader = (input: {
   url: string;
   method: string;
 }) => Promise<string>;
+
+/**
+ * Type that defines how custom ...
+ * @param url
+ * @param method
+ * @param accessToken
+ * @return A promise resolving to a string which contains the value of 'DPoP' header
+ */
+export type GetDpopHeader = (
+  url: string,
+  method: string,
+  accessToken?: string
+) => Promise<string>;
+
+/**
+ * Type that defines how custom
+ * @param url
+ * @return A promise resolving to a string which contains the value of the Oauth2 + DPoP 'Authorization'-header
+ */
+export type GetAccessToken = (url: string) => Promise<string>;
+
+export type DpopCredentials = {
+  getAccessToken: GetAccessToken;
+  getDpopHeader: GetDpopHeader;
+};
 
 export const defaultConfig: Required<DefaultConfig> = {
   gwCsdsServiceName: 'faasGW',

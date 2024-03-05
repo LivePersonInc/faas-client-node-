@@ -3,7 +3,14 @@ import {format as createUrl} from 'url';
 import {format} from 'util';
 import VError = require('verror');
 import {HTTP_METHOD, GetUrlOptions} from '../types/getUrlOptions';
-import {Config, DebugConfig, GetAuthorizationHeader} from './clientConfig';
+import {
+  Config,
+  DebugConfig,
+  DpopCredentials,
+  GetAccessToken,
+  GetAuthorizationHeader,
+  GetDpopHeader,
+} from './clientConfig';
 import {Tooling} from '../types/tooling';
 import {Response} from '../types/response';
 import {
@@ -30,7 +37,10 @@ export class BaseClient {
   protected readonly config: Required<Config>;
   protected readonly tooling: Tooling;
 
-  protected getAuthorizationHeader: GetAuthorizationHeader;
+  protected getAuthorizationHeader: GetAuthorizationHeader | undefined;
+
+  protected getAccessToken: GetAccessToken | undefined;
+  protected getDpopHeader: GetDpopHeader | undefined;
 
   /**
    * Default constructor, creates a FaaS client.
@@ -47,8 +57,12 @@ export class BaseClient {
         config,
         tooling
       );
+    } else if (this.isDpopCredentials(config.authStrategy)) {
+      this.getAccessToken = config.authStrategy.getAccessToken;
+      this.getDpopHeader = config.authStrategy.getDpopHeader;
     } else {
-      this.getAuthorizationHeader = config.authStrategy;
+      this.getAuthorizationHeader =
+        config.authStrategy as GetAuthorizationHeader;
     }
     this.tooling = tooling;
   }
@@ -344,13 +358,32 @@ export class BaseClient {
         url,
         body: options.body ? {timestamp: Date.now(), ...body} : undefined,
         headers: {
-          Authorization: await this.getAuthorizationHeader({url, method}),
+          //  Authorization: await this.getAuthorizationHeader({url, method}),
           'Content-Type': 'application/json',
           'User-Agent': `${name}@${version}`,
           'X-Request-ID': requestId,
         },
         method,
       };
+
+      let headers;
+
+      if (this.getAuthorizationHeader !== undefined) {
+        headers = {
+          Authorization: await this.getAuthorizationHeader({url, method}),
+        };
+      } else if (
+        this.getAccessToken !== undefined &&
+        this.getDpopHeader !== undefined
+      ) {
+        const accessToken = await this.getAccessToken(url);
+        headers = {
+          Authorization: `DPoP ${accessToken}`,
+          DPoP: await this.getDpopHeader(url, method, accessToken),
+        };
+      }
+
+      requestOptions.headers = {...requestOptions.headers, ...headers};
 
       const response = await this.tooling.fetch(requestOptions);
       if (response.ok === false && options.failOnErrorStatusCode === true) {
@@ -448,6 +481,15 @@ export class BaseClient {
     authStrategy: unknown
   ): authStrategy is AppJwtCredentials => {
     return (authStrategy as Record<string, unknown>).clientId !== undefined;
+  };
+
+  private isDpopCredentials = (
+    authStrategy: unknown
+  ): authStrategy is DpopCredentials => {
+    return (
+      (authStrategy as DpopCredentials).getAccessToken !== undefined &&
+      (authStrategy as DpopCredentials).getDpopHeader !== undefined
+    );
   };
 
   private getAppJwtAuthorizationHeader = (
