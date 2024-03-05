@@ -358,7 +358,6 @@ export class BaseClient {
         url,
         body: options.body ? {timestamp: Date.now(), ...body} : undefined,
         headers: {
-          //  Authorization: await this.getAuthorizationHeader({url, method}),
           'Content-Type': 'application/json',
           'User-Agent': `${name}@${version}`,
           'X-Request-ID': requestId,
