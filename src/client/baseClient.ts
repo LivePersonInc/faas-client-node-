@@ -2,7 +2,7 @@ import {InvocationMetricData} from './../helper/metricCollector';
 import {format as createUrl} from 'url';
 import {format} from 'util';
 import VError = require('verror');
-import {HTTP_METHOD, GetUrlOptions} from '../types/getUrlOptions';
+import {HTTP_METHOD, GetUrlOptions, PROTOCOL} from '../types/getUrlOptions';
 import {
   Config,
   DebugConfig,
@@ -230,7 +230,7 @@ export class BaseClient {
         ...invokeData,
       });
 
-      const resp = await this.doFetch({url, ...invokeData});
+      const resp = await this.doFetch({url, domain, ...invokeData});
       return resp;
     } catch (error) {
       throw new VError(
@@ -276,7 +276,7 @@ export class BaseClient {
         query,
         ...requestData,
       });
-      const resp = await this.doFetch({url, ...requestData});
+      const resp = await this.doFetch({url, domain, ...requestData});
       return resp;
     } catch (error) {
       throw new VError(
@@ -323,6 +323,7 @@ export class BaseClient {
         body: {implemented},
       }: Response = await this.doFetch({
         url,
+        domain,
         ...isImplementedData,
       });
       if (implemented === undefined) {
@@ -352,7 +353,7 @@ export class BaseClient {
    * Base function to perform requests against the FaaS services.
    */
   protected async doFetch(options: DoFetchOptions): Promise<Response> {
-    const {url, body, method, requestId} = options;
+    const {url, domain, body, method, requestId} = options;
     try {
       const requestOptions = {
         url,
@@ -375,7 +376,9 @@ export class BaseClient {
         this.getAccessToken !== undefined &&
         this.getDpopHeader !== undefined
       ) {
-        const accessToken = await this.getAccessToken(url);
+        const accessToken = await this.getAccessToken(
+          `${PROTOCOL.HTTPS}://${domain}`
+        );
         headers = {
           Authorization: `DPoP ${accessToken}`,
           DPoP: await this.getDpopHeader(url, method, accessToken),

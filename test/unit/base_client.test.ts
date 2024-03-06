@@ -1,5 +1,5 @@
 import {VError} from 'verror';
-import {DefaultConfig, BaseConfig, Config} from '../../src/client/clientConfig';
+import {DefaultConfig, BaseConfig, Config, DpopCredentials} from '../../src/client/clientConfig';
 import {PROTOCOL, HTTP_METHOD} from '../../src/types/getUrlOptions';
 import {Tooling} from '../../src/types/tooling';
 import {IsImplementedCache} from '../../src/helper/isImplementedCache';
@@ -155,6 +155,8 @@ const invokeWithDpopAuth = async (data: Invocation): Promise<Response> => {
       method: HTTP_METHOD.POST,
     })
   );
+
+  expect((testConfigWithDpopAuth.authStrategy as DpopCredentials).getAccessToken).toHaveBeenCalledWith("https://test-domain.com");
   return resp;
 };
 
@@ -228,6 +230,7 @@ const getLambdasWithDpopAuth = async (
       method: HTTP_METHOD.GET,
     })
   );
+  expect((testConfigWithDpopAuth.authStrategy as DpopCredentials).getAccessToken).toHaveBeenCalledWith("https://test-domain.com");
   return resp;
 };
 
@@ -554,6 +557,7 @@ describe('Base Client', () => {
           method: HTTP_METHOD.GET,
         })
       );
+      expect((testConfigWithDpopAuth.authStrategy as DpopCredentials).getAccessToken).toHaveBeenCalledWith("https://test-domain.com");
     });
 
     test('getLambdas with filtering', async () => {

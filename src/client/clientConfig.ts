@@ -58,10 +58,21 @@ export type GetAuthorizationHeader = (input: {
 }) => Promise<string>;
 
 /**
- * Type that defines how custom ...
- * @param url
- * @param method
- * @param accessToken
+ * Type that defines how custom 'getAccessToken' method have to be implemented (Required for OAuth2+DPoP authentication)
+ * Called whenever the faas-client needs to authenticate to send a request. Its return value
+ * is used in the 'Authorization'-header of the request.
+ * @param domainUrl Protocol (HTTPS) + domain of the API registered in the authentication server required to get the access token. E.g., https://va.faasgw.liveperson.net
+ * @return A promise resolving to a string which contains the value of the Oauth2 + DPoP 'Authorization'-header
+ */
+export type GetAccessToken = (domainUrl: string) => Promise<string>;
+
+/**
+ * Type that defines how custom 'getDpopHeader method have to be implemented (Required for OAuth2+DPoP authentication)
+ * Called whenever the faas-client needs to authenticate to send a request. Its return value
+ * is used in the 'DPoP'-header of the request.
+ * @param url Request 'url' including protocol domain and path
+ * @param method 'http-method' of the request
+ * @param accessToken A string containing the access token that was returned by 'getAccessToken' method
  * @return A promise resolving to a string which contains the value of 'DPoP' header
  */
 export type GetDpopHeader = (
@@ -71,12 +82,9 @@ export type GetDpopHeader = (
 ) => Promise<string>;
 
 /**
- * Type that defines how custom
- * @param url
- * @return A promise resolving to a string which contains the value of the Oauth2 + DPoP 'Authorization'-header
+ * Type that defines how custom OAuth2+DPoP 'getAccessToken' and 'getDpopHeader' methods have to be implemented.
+ * OAuth2+DPoP authentication is only available INTERNALLY for service-to-service.
  */
-export type GetAccessToken = (url: string) => Promise<string>;
-
 export type DpopCredentials = {
   getAccessToken: GetAccessToken;
   getDpopHeader: GetDpopHeader;
