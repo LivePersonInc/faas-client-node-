@@ -61,8 +61,7 @@ export class BaseClient {
       this.getAccessToken = config.authStrategy.getAccessToken;
       this.getDpopHeader = config.authStrategy.getDpopHeader;
     } else {
-      this.getAuthorizationHeader =
-        config.authStrategy as GetAuthorizationHeader;
+      this.getAuthorizationHeader = config.authStrategy;
     }
     this.tooling = tooling;
   }
@@ -366,26 +365,29 @@ export class BaseClient {
         method,
       };
 
-      let headers;
-
       if (this.getAuthorizationHeader !== undefined) {
-        headers = {
-          Authorization: await this.getAuthorizationHeader({url, method}),
+        requestOptions.headers = {
+          ...requestOptions.headers,
+          ...{Authorization: await this.getAuthorizationHeader({url, method})},
         };
-      } else if (
+      }
+
+      if (
         this.getAccessToken !== undefined &&
         this.getDpopHeader !== undefined
       ) {
         const accessToken = await this.getAccessToken(
           `${PROTOCOL.HTTPS}://${domain}`
         );
-        headers = {
-          Authorization: `DPoP ${accessToken}`,
-          DPoP: await this.getDpopHeader(url, method, accessToken),
+
+        requestOptions.headers = {
+          ...requestOptions.headers,
+          ...{
+            Authorization: `DPoP ${accessToken}`,
+            DPoP: await this.getDpopHeader(url, method, accessToken),
+          },
         };
       }
-
-      requestOptions.headers = {...requestOptions.headers, ...headers};
 
       const response = await this.tooling.fetch(requestOptions);
       if (response.ok === false && options.failOnErrorStatusCode === true) {
@@ -489,8 +491,13 @@ export class BaseClient {
     authStrategy: unknown
   ): authStrategy is DpopCredentials => {
     return (
-      (authStrategy as DpopCredentials).getAccessToken !== undefined &&
-      (authStrategy as DpopCredentials).getDpopHeader !== undefined
+      typeof authStrategy === 'object' &&
+      authStrategy !== null &&
+      authStrategy !== undefined &&
+      'getAccessToken' in authStrategy &&
+      'getDpopHeader' in authStrategy &&
+      typeof (authStrategy as DpopCredentials).getAccessToken === 'function' &&
+      typeof (authStrategy as DpopCredentials).getDpopHeader === 'function'
     );
   };
 
