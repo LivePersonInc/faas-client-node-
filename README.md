@@ -112,7 +112,7 @@ const client = new Client({
 
 #### DPoP authorization
 
-The client supports Oauth2+DPoP authorization ONLY FOR INTERNAL USE in service-to-service. Required methods can be configured during the initialization as 'authStrategy.' You must provide your implementation of the `getAccessToken` and `getDpopHeader` methods.
+The client supports Oauth2+DPoP authorization ONLY FOR INTERNAL USE in service-to-service. Required methods can be configured during the initialization as 'authStrategy.' You must provide your implementation of the `getAccessTokenInternal` and `getDpopHeaderInternal` methods.
 
 Example:
 
@@ -120,11 +120,11 @@ Example:
   const client = new Client({
     accountId: 'myAccountId',
     authStrategy: {
-        getAccessToken: async (domainUrl: string) => {
+        getAccessTokenInternal: async (domainUrl: string) => {
           // you implementation
           return 'accessToken';
         },
-        getDpopHeader: async (url: string, method: string, accessToken?: string) => {
+        getDpopHeaderInternal: async (url: string, method: string, accessToken?: string) => {
           // you implementation
           return 'dopHeader';
         },
