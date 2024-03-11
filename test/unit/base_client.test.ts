@@ -34,10 +34,10 @@ const testBaseConfig: Required<BaseConfig> = {
 const testBaseConfigDpopAuth: Required<BaseConfig> = {
   accountId: '123456',
   authStrategy: {
-    getAccessToken: jest.fn(async () => {
+    getAccessTokenInternal: jest.fn(async () => {
       return 'accessToken';
     }),
-    getDpopHeader: jest.fn(async () => {
+    getDpopHeaderInternal: jest.fn(async () => {
       return 'dopHeader';
     }),
   },
@@ -156,7 +156,7 @@ const invokeWithDpopAuth = async (data: Invocation): Promise<Response> => {
     })
   );
 
-  expect((testConfigWithDpopAuth.authStrategy as DpopCredentials).getAccessToken).toHaveBeenCalledWith("https://test-domain.com");
+  expect((testConfigWithDpopAuth.authStrategy as DpopCredentials).getAccessTokenInternal).toHaveBeenCalledWith("https://test-domain.com");
   return resp;
 };
 
@@ -230,7 +230,7 @@ const getLambdasWithDpopAuth = async (
       method: HTTP_METHOD.GET,
     })
   );
-  expect((testConfigWithDpopAuth.authStrategy as DpopCredentials).getAccessToken).toHaveBeenCalledWith("https://test-domain.com");
+  expect((testConfigWithDpopAuth.authStrategy as DpopCredentials).getAccessTokenInternal).toHaveBeenCalledWith("https://test-domain.com");
   return resp;
 };
 
@@ -557,7 +557,7 @@ describe('Base Client', () => {
           method: HTTP_METHOD.GET,
         })
       );
-      expect((testConfigWithDpopAuth.authStrategy as DpopCredentials).getAccessToken).toHaveBeenCalledWith("https://test-domain.com");
+      expect((testConfigWithDpopAuth.authStrategy as DpopCredentials).getAccessTokenInternal).toHaveBeenCalledWith("https://test-domain.com");
     });
 
     test('getLambdas with filtering', async () => {

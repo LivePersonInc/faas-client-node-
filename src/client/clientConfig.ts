@@ -82,12 +82,12 @@ export type GetDpopHeader = (
 ) => Promise<string>;
 
 /**
- * Type that defines how custom OAuth2+DPoP 'getAccessToken' and 'getDpopHeader' methods have to be implemented.
+ * Type that defines how custom OAuth2+DPoP 'getAccessTokenInternal' and 'getDpopHeaderInternal' methods have to be implemented.
  * OAuth2+DPoP authentication is only available INTERNALLY for service-to-service.
  */
 export type DpopCredentials = {
-  getAccessToken: GetAccessToken;
-  getDpopHeader: GetDpopHeader;
+  getAccessTokenInternal: GetAccessToken;
+  getDpopHeaderInternal: GetDpopHeader;
 };
 
 export const defaultConfig: Required<DefaultConfig> = {

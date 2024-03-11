@@ -58,8 +58,8 @@ export class BaseClient {
         tooling
       );
     } else if (this.isDpopCredentials(config.authStrategy)) {
-      this.getAccessToken = config.authStrategy.getAccessToken;
-      this.getDpopHeader = config.authStrategy.getDpopHeader;
+      this.getAccessToken = config.authStrategy.getAccessTokenInternal;
+      this.getDpopHeader = config.authStrategy.getDpopHeaderInternal;
     } else {
       this.getAuthorizationHeader = config.authStrategy;
     }
@@ -494,10 +494,10 @@ export class BaseClient {
       typeof authStrategy === 'object' &&
       authStrategy !== null &&
       authStrategy !== undefined &&
-      'getAccessToken' in authStrategy &&
-      'getDpopHeader' in authStrategy &&
-      typeof (authStrategy as DpopCredentials).getAccessToken === 'function' &&
-      typeof (authStrategy as DpopCredentials).getDpopHeader === 'function'
+      'getAccessTokenInternal' in authStrategy &&
+      'getDpopHeaderInternal' in authStrategy &&
+      typeof authStrategy.getAccessTokenInternal === 'function' &&
+      typeof authStrategy.getDpopHeaderInternal === 'function'
     );
   };
 
