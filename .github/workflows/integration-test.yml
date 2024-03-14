@@ -20,8 +20,8 @@ jobs:
     - run: npm install
     - run: npm run integration
       env:
-        ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
-        SUCCESS_LAMBDA_UUID: ${{ secrets.LAMBDA_UUID }}
+        ACCOUNT_ID: ${{ env.ACCOUNT_ID }}
+        SUCCESS_LAMBDA_UUID: ${{ env.SUCCESS_LAMBDA_UUID }}
         CLIENT_ID: ${{ secrets.CLIENT_ID }}
         CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
         OAUTH_API_KEY: ${{ secrets.OAUTH_API_KEY }}
