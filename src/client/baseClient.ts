@@ -2,8 +2,15 @@ import {InvocationMetricData} from './../helper/metricCollector';
 import {format as createUrl} from 'url';
 import {format} from 'util';
 import VError = require('verror');
-import {HTTP_METHOD, GetUrlOptions} from '../types/getUrlOptions';
-import {Config, DebugConfig, GetAuthorizationHeader} from './clientConfig';
+import {HTTP_METHOD, GetUrlOptions, PROTOCOL} from '../types/getUrlOptions';
+import {
+  Config,
+  DebugConfig,
+  DpopCredentials,
+  GetAccessToken,
+  GetAuthorizationHeader,
+  GetDpopHeader,
+} from './clientConfig';
 import {Tooling} from '../types/tooling';
 import {Response} from '../types/response';
 import {
@@ -30,7 +37,10 @@ export class BaseClient {
   protected readonly config: Required<Config>;
   protected readonly tooling: Tooling;
 
-  protected getAuthorizationHeader: GetAuthorizationHeader;
+  protected getAuthorizationHeader: GetAuthorizationHeader | undefined;
+
+  protected getAccessToken: GetAccessToken | undefined;
+  protected getDpopHeader: GetDpopHeader | undefined;
 
   /**
    * Default constructor, creates a FaaS client.
@@ -47,6 +57,9 @@ export class BaseClient {
         config,
         tooling
       );
+    } else if (this.isDpopCredentials(config.authStrategy)) {
+      this.getAccessToken = config.authStrategy.getAccessTokenInternal;
+      this.getDpopHeader = config.authStrategy.getDpopHeaderInternal;
     } else {
       this.getAuthorizationHeader = config.authStrategy;
     }
@@ -216,7 +229,7 @@ export class BaseClient {
         ...invokeData,
       });
 
-      const resp = await this.doFetch({url, ...invokeData});
+      const resp = await this.doFetch({url, domain, ...invokeData});
       return resp;
     } catch (error) {
       throw new VError(
@@ -262,7 +275,7 @@ export class BaseClient {
         query,
         ...requestData,
       });
-      const resp = await this.doFetch({url, ...requestData});
+      const resp = await this.doFetch({url, domain, ...requestData});
       return resp;
     } catch (error) {
       throw new VError(
@@ -309,6 +322,7 @@ export class BaseClient {
         body: {implemented},
       }: Response = await this.doFetch({
         url,
+        domain,
         ...isImplementedData,
       });
       if (implemented === undefined) {
@@ -338,19 +352,42 @@ export class BaseClient {
    * Base function to perform requests against the FaaS services.
    */
   protected async doFetch(options: DoFetchOptions): Promise<Response> {
-    const {url, body, method, requestId} = options;
+    const {url, domain, body, method, requestId} = options;
     try {
       const requestOptions = {
         url,
         body: options.body ? {timestamp: Date.now(), ...body} : undefined,
         headers: {
-          Authorization: await this.getAuthorizationHeader({url, method}),
           'Content-Type': 'application/json',
           'User-Agent': `${name}@${version}`,
           'X-Request-ID': requestId,
         },
         method,
       };
+
+      if (this.getAuthorizationHeader !== undefined) {
+        requestOptions.headers = {
+          ...requestOptions.headers,
+          ...{Authorization: await this.getAuthorizationHeader({url, method})},
+        };
+      }
+
+      if (
+        this.getAccessToken !== undefined &&
+        this.getDpopHeader !== undefined
+      ) {
+        const accessToken = await this.getAccessToken(
+          `${PROTOCOL.HTTPS}://${domain}`
+        );
+
+        requestOptions.headers = {
+          ...requestOptions.headers,
+          ...{
+            Authorization: `DPoP ${accessToken}`,
+            DPoP: await this.getDpopHeader(url, method, accessToken),
+          },
+        };
+      }
 
       const response = await this.tooling.fetch(requestOptions);
       if (response.ok === false && options.failOnErrorStatusCode === true) {
@@ -448,6 +485,20 @@ export class BaseClient {
     authStrategy: unknown
   ): authStrategy is AppJwtCredentials => {
     return (authStrategy as Record<string, unknown>).clientId !== undefined;
+  };
+
+  private isDpopCredentials = (
+    authStrategy: unknown
+  ): authStrategy is DpopCredentials => {
+    return (
+      typeof authStrategy === 'object' &&
+      authStrategy !== null &&
+      authStrategy !== undefined &&
+      'getAccessTokenInternal' in authStrategy &&
+      'getDpopHeaderInternal' in authStrategy &&
+      typeof authStrategy.getAccessTokenInternal === 'function' &&
+      typeof authStrategy.getDpopHeaderInternal === 'function'
+    );
   };
 
   private getAppJwtAuthorizationHeader = (

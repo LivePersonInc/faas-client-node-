@@ -1,5 +1,5 @@
 import {VError} from 'verror';
-import {DefaultConfig, BaseConfig, Config} from '../../src/client/clientConfig';
+import {DefaultConfig, BaseConfig, Config, DpopCredentials} from '../../src/client/clientConfig';
 import {PROTOCOL, HTTP_METHOD} from '../../src/types/getUrlOptions';
 import {Tooling} from '../../src/types/tooling';
 import {IsImplementedCache} from '../../src/helper/isImplementedCache';
@@ -31,9 +31,26 @@ const testBaseConfig: Required<BaseConfig> = {
   }),
 };
 
+const testBaseConfigDpopAuth: Required<BaseConfig> = {
+  accountId: '123456',
+  authStrategy: {
+    getAccessTokenInternal: jest.fn(async () => {
+      return 'accessToken';
+    }),
+    getDpopHeaderInternal: jest.fn(async () => {
+      return 'dopHeader';
+    }),
+  },
+};
+
 const testConfig: Required<Config> = {
   ...defaultTestConfig,
   ...testBaseConfig,
+};
+
+const testConfigWithDpopAuth: Required<Config> = {
+  ...defaultTestConfig,
+  ...testBaseConfigDpopAuth,
 };
 
 const testTooling: Required<Tooling> = {
@@ -103,6 +120,46 @@ const invoke = async (data: Invocation): Promise<Response> => {
   return resp;
 };
 
+const invokeWithDpopAuth = async (data: Invocation): Promise<Response> => {
+  const client = new BaseClient(testConfigWithDpopAuth, testTooling);
+  const resp = await client.invoke(data);
+
+  baseChecks(resp);
+  expect(testTooling.getCsdsEntry).toHaveBeenCalledWith(
+    testConfig.accountId,
+    testConfig.gwCsdsServiceName
+  );
+  expect(testTooling.metricCollector.onInvoke).toHaveBeenCalledTimes(1);
+  expect(testTooling.metricCollector.onInvoke).toHaveBeenCalledWith(
+    expect.objectContaining({
+      accountId: testConfig.accountId,
+      externalSystem: 'test',
+      fromCache: false,
+      domain: 'test-domain.com',
+    })
+  );
+
+  expect(testTooling.fetch).toHaveBeenCalledWith(
+    expect.objectContaining({
+      url: expect.toBeNonEmptyString(),
+      body: expect.objectContaining({
+        timestamp: expect.toBeNumber(),
+      }),
+      headers: expect.objectContaining({
+        Authorization: expect.toStartWith('DPoP'),
+        DPoP: expect.toBeNonEmptyString(),
+        'Content-Type': expect.toBeNonEmptyString(),
+        'User-Agent': expect.toBeNonEmptyString(),
+        'X-Request-ID': expect.toBeNonEmptyString(),
+      }),
+      method: HTTP_METHOD.POST,
+    })
+  );
+
+  expect((testConfigWithDpopAuth.authStrategy as DpopCredentials).getAccessTokenInternal).toHaveBeenCalledWith("https://test-domain.com");
+  return resp;
+};
+
 const getLambdas = async (data: LambdaRequest): Promise<Response> => {
   const client = new BaseClient(testConfig, testTooling);
   const resp = await client.getLambdas(data);
@@ -135,6 +192,45 @@ const getLambdas = async (data: LambdaRequest): Promise<Response> => {
       method: HTTP_METHOD.GET,
     })
   );
+  return resp;
+};
+
+const getLambdasWithDpopAuth = async (
+  data: LambdaRequest
+): Promise<Response> => {
+  const client = new BaseClient(testConfigWithDpopAuth, testTooling);
+  const resp = await client.getLambdas(data);
+  baseChecks(resp);
+  expect(testTooling.getCsdsEntry).toHaveBeenCalledWith(
+    testConfig.accountId,
+    testConfig.uiCsdsServiceName
+  );
+
+  expect(testTooling.metricCollector.onGetLambdas).toHaveBeenCalledTimes(1);
+
+  expect(testTooling.metricCollector.onGetLambdas).toHaveBeenCalledWith(
+    expect.objectContaining({
+      accountId: testConfig.accountId,
+      fromCache: false,
+      externalSystem: 'test',
+      domain: 'test-domain.com',
+    })
+  );
+
+  expect(testTooling.fetch).toHaveBeenCalledWith(
+    expect.objectContaining({
+      url: expect.toBeNonEmptyString(),
+      headers: expect.objectContaining({
+        Authorization: expect.toStartWith('DPoP'),
+        DPoP: expect.toBeNonEmptyString(),
+        'Content-Type': expect.toBeNonEmptyString(),
+        'User-Agent': expect.toBeNonEmptyString(),
+        'X-Request-ID': expect.toBeNonEmptyString(),
+      }),
+      method: HTTP_METHOD.GET,
+    })
+  );
+  expect((testConfigWithDpopAuth.authStrategy as DpopCredentials).getAccessTokenInternal).toHaveBeenCalledWith("https://test-domain.com");
   return resp;
 };
 
@@ -188,6 +284,25 @@ describe('Base Client', () => {
         })
       );
     });
+
+    test('invoke method with Oauth2+DPoP auth strategy by event ID', async () => {
+      expect.hasAssertions();
+      await invokeWithDpopAuth({
+        eventId: EVENT.MessagingNewConversation,
+        body: {payload: null},
+        externalSystem: 'test',
+      });
+    });
+
+    test('invoke method with Oauth2+DPoP auth strategy by lambdaUUID', async () => {
+      expect.hasAssertions();
+      await invoke({
+        lambdaUuid: '12345678',
+        body: {payload: null},
+        externalSystem: 'test',
+      });
+    });
+
     test('should throw an error on invoke method with eventId and SkillId when skillId does not match event', async () => {
       expect.hasAssertions();
       const failureTooling = {
@@ -352,7 +467,6 @@ describe('Base Client', () => {
         })
       );
     });
-
     test('isImplemented with skillId', async () => {
       expect.hasAssertions();
       const client = new BaseClient(testConfig, testTooling);
@@ -400,6 +514,52 @@ describe('Base Client', () => {
       );
     });
 
+    test('isImplemented with Oauth2+DPoP auth strategy', async () => {
+      expect.hasAssertions();
+      const client = new BaseClient(testConfigWithDpopAuth, testTooling);
+      const hasBeenImplemented = await client.isImplemented({
+        eventId: EVENT.MessagingTTR,
+        externalSystem: 'test',
+      });
+      expect(testTooling.metricCollector.onIsImplemented).toHaveBeenCalledTimes(
+        1
+      );
+      expect(testTooling.metricCollector.onIsImplemented).toHaveBeenCalledWith(
+        expect.objectContaining({
+          accountId: testConfig.accountId,
+          event: EVENT.MessagingTTR,
+          externalSystem: 'test',
+          domain: 'test-domain.com',
+          fromCache: false,
+        })
+      );
+      expect(hasBeenImplemented).toBeTrue();
+      expect(testTooling.generateId).toHaveBeenCalledTimes(1);
+      expect(testTooling.getCsdsEntry).toHaveBeenCalledTimes(1);
+      expect(testTooling.fetch).toHaveBeenCalledTimes(1);
+      const hasBeenImplementedAgain = await client.isImplemented({
+        eventId: EVENT.MessagingNewConversation,
+        externalSystem: 'test',
+      });
+      // should still only have been called once as second call result was cached
+      expect(testTooling.fetch).toHaveBeenCalledTimes(1);
+      expect(hasBeenImplementedAgain).toBeTrue();
+      expect(testTooling.fetch).toHaveBeenCalledWith(
+        expect.objectContaining({
+          url: expect.toBeNonEmptyString(),
+          headers: expect.objectContaining({
+            Authorization: expect.toStartWith('DPoP'),
+            DPoP: expect.toBeNonEmptyString(),
+            'Content-Type': expect.toBeNonEmptyString(),
+            'User-Agent': expect.toBeNonEmptyString(),
+            'X-Request-ID': expect.toBeNonEmptyString(),
+          }),
+          method: HTTP_METHOD.GET,
+        })
+      );
+      expect((testConfigWithDpopAuth.authStrategy as DpopCredentials).getAccessTokenInternal).toHaveBeenCalledWith("https://test-domain.com");
+    });
+
     test('getLambdas with filtering', async () => {
       expect.hasAssertions();
       await getLambdas({
@@ -415,6 +575,16 @@ describe('Base Client', () => {
       await getLambdas({
         accountId: '123456',
         externalSystem: 'test',
+      });
+    });
+
+    test('getLambdas with Oauth2+DPoP auth strategy', async () => {
+      expect.hasAssertions();
+      await getLambdasWithDpopAuth({
+        accountId: '123456',
+        eventId: EVENT.MessagingNewConversation,
+        externalSystem: 'test',
+        state: ['Productive'],
       });
     });
   });

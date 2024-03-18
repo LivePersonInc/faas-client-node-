@@ -10,7 +10,10 @@ export interface BaseConfig {
    */
   readonly accountId: string;
 
-  readonly authStrategy: AppJwtCredentials | GetAuthorizationHeader;
+  readonly authStrategy:
+    | AppJwtCredentials
+    | GetAuthorizationHeader
+    | DpopCredentials;
 }
 
 export interface DefaultConfig {
@@ -53,6 +56,39 @@ export type GetAuthorizationHeader = (input: {
   url: string;
   method: string;
 }) => Promise<string>;
+
+/**
+ * Type that defines how custom 'getAccessToken' method have to be implemented (Required for OAuth2+DPoP authentication)
+ * Called whenever the faas-client needs to authenticate to send a request. Its return value
+ * is used in the 'Authorization'-header of the request.
+ * @param domainUrl Protocol (HTTPS) + domain of the API registered in the authentication server required to get the access token. E.g., https://va.faasgw.liveperson.net
+ * @return A promise resolving to a string which contains the value of the Oauth2 + DPoP 'Authorization'-header
+ */
+export type GetAccessToken = (domainUrl: string) => Promise<string>;
+
+/**
+ * Type that defines how custom 'getDpopHeader method have to be implemented (Required for OAuth2+DPoP authentication)
+ * Called whenever the faas-client needs to authenticate to send a request. Its return value
+ * is used in the 'DPoP'-header of the request.
+ * @param url Request 'url' including protocol domain and path
+ * @param method 'http-method' of the request
+ * @param accessToken A string containing the access token that was returned by 'getAccessToken' method
+ * @return A promise resolving to a string which contains the value of 'DPoP' header
+ */
+export type GetDpopHeader = (
+  url: string,
+  method: string,
+  accessToken?: string
+) => Promise<string>;
+
+/**
+ * Type that defines how custom OAuth2+DPoP 'getAccessTokenInternal' and 'getDpopHeaderInternal' methods have to be implemented.
+ * OAuth2+DPoP authentication is only available INTERNALLY for service-to-service.
+ */
+export type DpopCredentials = {
+  getAccessTokenInternal: GetAccessToken;
+  getDpopHeaderInternal: GetDpopHeader;
+};
 
 export const defaultConfig: Required<DefaultConfig> = {
   gwCsdsServiceName: 'faasGW',

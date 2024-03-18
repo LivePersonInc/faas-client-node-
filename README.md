@@ -12,6 +12,7 @@ It offers functionality to retrieve all lambdas and invoke them via lambda UUID 
   - [Install](#install)
   - [Usage](#usage)
     - [Initializing the client](#initializing-the-client)
+      - [DPoP authorization](#dpop-authorization)
       - [Optional Configuration Parameters](#optional-configuration-parameters)
       - [Collecting metrics](#collecting-metrics)
     - [Method call examples](#method-call-examples)
@@ -51,6 +52,7 @@ _Note:_ The library exposes typings for IDE assistance/auto-complete and compile
 
 The client will use the OAuth2.0 flow `client_credentials` for authorization. Please refer to these [docs](https://developers.liveperson.com/liveperson-functions-external-invocations-client-credentials.html) for further information on that. On each request the client will check if the `JWT` is about to expire. If this is the case, the client will try to refresh it. If the `JWT` is expired and the client failed to refresh it, an `Error` is thrown. The time after which the refreshing logic will kick in can be specified via the property `jwtRefreshAfterMinutes`. Alternatively, you can provide your own authorization method that generates a suitable authorization header
 by implementing a method that fulfills the GetAuthorizationHeader-Interface:
+
 ```ts
 export type GetAuthorizationHeader = (input: {
   url: string;
@@ -59,6 +61,7 @@ export type GetAuthorizationHeader = (input: {
 ```
 
 Example:
+
 ```ts
 // Default: Provide client id and client secret as auth strategy as follows
 import { Client } from 'liveperson-functions-client';
@@ -106,6 +109,28 @@ const client = new Client({
   authStrategy: getAuthorizationHeader,
 });
 ```
+
+#### DPoP authorization
+
+The client supports Oauth2+DPoP authorization ONLY FOR INTERNAL USE in service-to-service. Required methods can be configured during the initialization as 'authStrategy.' You must provide your implementation of the `getAccessTokenInternal` and `getDpopHeaderInternal` methods.
+
+Example:
+
+  ```ts
+  const client = new Client({
+    accountId: 'myAccountId',
+    authStrategy: {
+        getAccessTokenInternal: async (domainUrl: string) => {
+          // you implementation
+          return 'accessToken';
+        },
+        getDpopHeaderInternal: async (url: string, method: string, accessToken?: string) => {
+          // you implementation
+          return 'dopHeader';
+        },
+      }
+  });
+  ```
 
 #### Optional configuration parameters
 

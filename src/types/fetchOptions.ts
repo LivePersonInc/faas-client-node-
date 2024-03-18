@@ -14,4 +14,5 @@ export interface DoFetchOptions extends AuthorizationHeaderOptions {
   readonly body?: InvocationDomain;
   readonly requestId: string;
   readonly failOnErrorStatusCode?: boolean;
+  readonly domain: string;
 }
